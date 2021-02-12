@@ -1,0 +1,7 @@
+name = "SfPhysics"
+uuid = "aecb2691-9611-4a09-849a-871cc6723b3a"
+authors = ["I Can't Believe It's Not Physics <icantbelieveitsnotphysics@runbox.no>"]
+version = "0.1.0"
+
+[compat]
+julia = "1"
