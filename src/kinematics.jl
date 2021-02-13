@@ -1,12 +1,24 @@
 using Unitful
 
-export distance, duration, kinetic_energy
+export distance, duration
 
-distance(a::Unitful.Acceleration, t::Unitful.Time, initial_v::Unitful.Velocity) = t*initial_v + a*t^2 / 2
-distance(a::Unitful.Acceleration, t::Unitful.Time)::Unitful.Length = distance(a, t, 0u"m/s")
+"""
+    distance(a::Unitful.Acceleration, t::Unitful.Time, initial_v::Unitful.Velocity = 0u"m/s")
+	
+Compute the distance travelled in time `t` by a body with initial velocity `initial_v` and uniform acceleration `a`.
+"""
+distance(a::Unitful.Acceleration, t::Unitful.Time, initial_v::Unitful.Velocity = 0u"m/s") = t*initial_v + a*t^2 / 2
 
-duration(a::Unitful.Acceleration, d::Unitful.Length)::Unitful.Time = sqrt(2d / a)
-function duration(a::Unitful.Acceleration, d::Unitful.Length, initial_v::Unitful.Velocity)::Unitful.Time
+"""
+    duration(a::Unitful.Acceleration, d::Unitful.Length, initial_v::Unitful.Velocity = 0u"m/s")
+	
+Compute the time taken for a body with initial velocity `initial_v` and uniform acceleration `a` to travel a distance of `d`.
+"""
+function duration(a::Unitful.Acceleration, d::Unitful.Length, initial_v::Unitful.Velocity = 0u"m/s")
+	if initial_v == 0u"m/s"
+		return sqrt(2d / a)
+	end
+
     # at^2 + 2v_0t - 2d = 0
     # ax^2 + bx + c
 
@@ -29,5 +41,3 @@ function duration(a::Unitful.Acceleration, d::Unitful.Length, initial_v::Unitful
         return min(t1, t2)
     end
 end
-
-kinetic_energy(m::Unitful.Mass, v::Unitful.Velocity) = 0.5m*v^2 |> u"J"

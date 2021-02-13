@@ -1,5 +1,7 @@
 using Unitful
 
+export Material, density, yield_strength
+
 struct Material
 	density::Unitful.Density
 	yield_strength::Unitful.Pressure
