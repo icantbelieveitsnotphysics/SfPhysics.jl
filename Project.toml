@@ -3,5 +3,11 @@ uuid = "aecb2691-9611-4a09-849a-871cc6723b3a"
 authors = ["I Can't Believe It's Not Physics <icantbelieveitsnotphysics@runbox.no>"]
 version = "0.1.0"
 
+[deps]
+PhysicalConstants = "5ad8b20f-a522-5ce9-bfc9-ddf1d5bda6ab"
+Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
+UnitfulAngles = "6fb2a4bd-7999-5318-a3b2-8ad61056cd98"
+UnitfulAstro = "6112ee07-acf9-5e0f-b108-d242c714bf9f"
+
 [compat]
 julia = "1"
