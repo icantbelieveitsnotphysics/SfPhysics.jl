@@ -1,6 +1,6 @@
 module SfGravity
 
-	using PhysicalConstants.CODATA2014: c_0, g_n, G, StefanBoltzmannConstant, ħ, k_B
+	using PhysicalConstants.CODATA2018: c_0, g_n, G, StefanBoltzmannConstant, ħ, k_B
 	using Unitful
 	using UnitfulAstro
 	
