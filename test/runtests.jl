@@ -19,4 +19,17 @@ import PhysicalConstants.CODATA2018: g_n
 		@test orbital_velocity(1.000001018u"AU", 365.25u"d", 0.0017) ≈ 29.78u"km/s" atol = 0.01u"km/s"		
 		@test escape_velocity(1u"Mearth", 1u"Rearth") ≈ 11.186u"km/s" atol = 0.01u"km/s"
 	end
+	
+	@testset "kinematics.jl" begin
+		@test duration(0u"m/s^2", 10u"m") == Inf * 1u"s"
+		@test duration(10u"m/s^2", 0u"m") == 0u"s"
+		@test duration(10u"m/s^2", 10u"m") == sqrt(2) * 1u"s"
+		@test_throws DomainError duration(10u"m/s^2", -10u"m")
+		
+		@test duration(0u"m/s^2", 10u"m", 10u"m/s") == 1u"s"
+		@test duration(10u"m/s^2", 0u"m", 10u"m/s") == 0u"s"
+		@test duration(10u"m/s^2", 10u"m", 10u"m/s") ≈ 0.7320508075688774u"s"
+		@test_throws DomainError duration(10u"m/s^2", -10u"m", 10u"m/s")
+		@test_throws DomainError duration(0u"m/s^2", 10u"m", -10u"m/s")
+	end
 end

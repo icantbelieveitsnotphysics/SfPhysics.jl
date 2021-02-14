@@ -15,8 +15,18 @@ distance(a::Unitful.Acceleration, t::Unitful.Time, initial_v::Unitful.Velocity =
 Compute the time taken for a body with initial velocity `initial_v` and uniform acceleration `a` to travel a distance of `d`.
 """
 function duration(a::Unitful.Acceleration, d::Unitful.Length, initial_v::Unitful.Velocity = 0u"m/s")
+    if d < 0u"m"
+		throw(DomainError(d, "Negative distances not allowed."))
+	end
+
 	if initial_v == 0u"m/s"
 		return sqrt(2d / a)
+	elseif a == 0u"m/s^2"
+		if initial_v < 0u"m/s"
+			throw(DomainError(d, "Negative initial velocities not allowed with zero acceleration."))
+		end
+	
+		return d / initial_v
 	end
 
     # at^2 + 2v_0t - 2d = 0
