@@ -63,7 +63,7 @@ julia> gravity(SfSolarSystem.moon)
 ```"""
 	gravity(body::Body) = gravity(body.mass, body.equatorial_radius)
 	planetary_mass(body::Body) = body.mass
-	planetary_radius(body::Body) = body.radius
+	planetary_radius(body::Body) = body.equatorial_radius
 
 	# kepler's third
 	orbital_period(orbit::Orbit) = orbital_period(orbit.parent.mass, orbit.semi_major_axis)
@@ -77,7 +77,7 @@ julia> gravity(SfSolarSystem.moon)
 	escape_velocity(body::Body) = escape_velocity(body.mass, body.equatorial_radius)
 
 	hill_sphere(body::Body) = hill_sphere(body.orbit.parent.mass, body.mass, body.orbit.semi_major_axis, body.orbit.eccentricity)
-	hill_sphere(orbit::Orbit, mass::Unitful.Mass) = hill_sphere(body.orbit.parent.mass, mass, body.orbit.semi_major_axis, body.orbit.eccentricity)
+	hill_sphere(orbit::Orbit, mass::Unitful.Mass) = hill_sphere(orbit.parent.mass, mass, orbit.semi_major_axis, orbit.eccentricity)
 
 	kinetic_energy(mass::Unitful.Mass, orbit::Orbit) = kinetic_energy(mass, orbital_velocity(orbit))
 	kinetic_energy(body::Body) = kinetic_energy(body.mass, body.orbit)

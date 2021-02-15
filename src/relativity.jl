@@ -6,9 +6,17 @@ module SfRelativity
 
 	import ..SfPhysics: kinetic_energy
 	
-	export lorentz_factor, lorentz_velocity, relativistic_kinetic_energy, relativistic_brachistochrone_transit_time, pr, 
-		relativistic_velocity, relativistic_delta_v
+	export lorentz_factor, lorentz_velocity, relativistic_kinetic_energy, relativistic_brachistochrone_transit_time, 
+		proper_relativistic_brachistochrone_transit_time, relativistic_velocity, relativistic_delta_v
 
+	"""
+	lorentz_factor(v::Unitful.Velocity)
+	
+Compute the Lorentz factor associated with the given velocity.
+
+Note that for small values of `v` floating point precision issues can produce substantial
+inaccuracies unless velocities are specified as `BigInt` or `BigFloat`.
+	"""
 	lorentz_factor(v::Unitful.Velocity) = 1/sqrt(1-(v/c_0)^2) |> u"m/m"
 	lorentz_factor(t::Unitful.Time, acc::Unitful.Acceleration) = sqrt(1 + (acc*t/c_0)^2) |> u"m/m"
 	lorentz_factor(d::Unitful.Length, acc::Unitful.Acceleration) = 1 + (acc * d)/c_0^2 |> u"m/m"
@@ -20,7 +28,8 @@ module SfRelativity
 	
 Compute the kinetic energy of a body with mass `m` travelling at velocity `v`.
 
-Relativistic corrections are included.
+Relativistic corrections are included. Note that for small values of `v` floating point precision issues
+can produce substantial inaccuracies unless velocities are specified as `BigInt` or `BigFloat`.
 	"""
 	relativistic_kinetic_energy(m::Unitful.Mass, v::Unitful.Velocity) = (m * big(c_0)^2)* (lorentz_factor(v) - 1) |> u"J"
 	
