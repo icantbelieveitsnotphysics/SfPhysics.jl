@@ -7,6 +7,7 @@ module SfPlanetary
 	export Body, Orbit, Rotation
 
 	const Degree{T} = Quantity{T, NoDims, typeof(u"°")}
+	@derived_dimension ThermalFlux Unitful.𝐌*Unitful.𝐓^-3
 
 	abstract type AbstractBody end
 
@@ -31,24 +32,27 @@ module SfPlanetary
 		mass::Unitful.Mass
 		equatorial_radius::Unitful.Length
 		polar_radius::Unitful.Length
+		bond_albedo::Real
 		orbit::Union{Nothing, Orbit}
-		Rotation::Union{Nothing, Rotation}
+		rotation::Union{Nothing, Rotation}
 	end
 
 	Orbit(parent::AbstractBody, semi_major_axis::Unitful.Length, eccentricity::Real, inclination::Degree) =
 		Orbit(parent, semi_major_axis, eccentricity, nothing, inclination, nothing, nothing)
 		
-	Body(name::String, mass::Unitful.Mass, radius::Unitful.Length) =
-		Body(name, mass, radius, radius, nothing, nothing)
+	Body(name::String, mass::Unitful.Mass, radius::Unitful.Length, bond_albedo::Real) =
+		Body(name, mass, radius, radius, bond_albedo, nothing, nothing)
 
 	#####################################################################################
 	
 	import ..SfGravity: gravity, planetary_mass, planetary_radius, orbital_period, orbital_radius, orbital_velocity, escape_velocity, hill_sphere
 	import ..SfRelativity: relativistic_kinetic_energy
-	import ..SfPhysics: kinetic_energy
+	import ..SfPhysics: kinetic_energy, spherical_cap_solid_angle
+	
+	import PhysicalConstants.CODATA2018: σ # Stefan-Boltzmann constant
 	
 	export gravity, planetary_mass, planetary_radius, orbital_period, orbital_radius, orbital_velocity, escape_velocity, hill_sphere,
-		relativistic_kinetic_energy, kinetic_energy
+		relativistic_kinetic_energy, kinetic_energy, stellar_irradiance, planetary_equilibrium_temperature
 
 	"""
 	gravity(body::Body)
@@ -81,4 +85,26 @@ julia> gravity(SfSolarSystem.moon)
 
 	kinetic_energy(mass::Unitful.Mass, orbit::Orbit) = kinetic_energy(mass, orbital_velocity(orbit))
 	kinetic_energy(body::Body) = kinetic_energy(body.mass, body.orbit)
+	
+	"""
+	stellar_luminosity(r_star::Unitful.Length, t_surface::Unirful.Temperature)
+	
+Approximate the luminosity of a star with radius `r_star` and surface temperature `t_surface`.
+"""
+	stellar_luminosity(r_star::Unitful.Length, t_surface::Unirful.Temperature) = 4π * r_star^2 * σ * t_star^4 |>u"W"
+	
+	"""
+	stellar_irradiance = function(l_stellar::Unitful.Power, r_orbit::Unitful.Length, r_body::Unitful.Length)
+
+Compute the proportion of a star's luminosity that falls upon a circular body of the given radius at the specified orbital distance.	
+"""
+	stellar_irradiance = function(l_stellar::Unitful.Power, r_orbit::Unitful.Length, r_body::Unitful.Length)
+		Ω = spherical_cap_solid_angle(r_orbit, r_body) # steradians
+		return l_stellar * Ω / 4π
+	end
+	
+	planetary_equilibrium_temperature(irradiance::ThermalFlux, bond_albedo::Real) = ((irradiance * (1 - bond_albedo)) / 4σ)^.25 |> u"K"
+	
+	planetary_equilibrium_temperature(l_stellar::Unitful.Power, r_orbit::Unitful.Length, r_body::Unitful.Length, bond_albedo::Real) =
+		planetary_equilibrium_temperature(solar_irradiance(s_l, r_orbit, r_body) / (π * r_body^2), bond_albedo) |> u"K"
 end
