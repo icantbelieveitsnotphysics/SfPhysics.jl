@@ -56,7 +56,7 @@ import PhysicalConstants.CODATA2018: g_n, c_0
 	end
 	
 	@testset "SfRelativity" begin
-		# use bignums here, otherwise floating point rounding will ruin accuracy (RKE returns 59J!)
+		# use bignums here, otherwise floating point rounding will ruin accuracy (RKE returns 59J at 10m/s!)
 		@test kinetic_energy(1u"kg", 10u"m/s") ≈ relativistic_kinetic_energy(1u"kg", big(10) * 1u"m/s") atol = 0.0000000000001u"J"
 		@test kinetic_energy(1u"kg", 0.5c_0) ≈ relativistic_kinetic_energy(1u"kg", 0.5c_0) * 0.808 atol=1e12u"J"
 		
