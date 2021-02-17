@@ -32,7 +32,7 @@ module SfPlanetary
 		mass::Unitful.Mass
 		equatorial_radius::Unitful.Length
 		polar_radius::Unitful.Length
-		bond_albedo::Real
+		bond_albedo::Union{Nothing, Real}
 		orbit::Union{Nothing, Orbit}
 		rotation::Union{Nothing, Rotation}
 	end
@@ -40,7 +40,7 @@ module SfPlanetary
 	Orbit(parent::AbstractBody, semi_major_axis::Unitful.Length, eccentricity::Real, inclination::Degree) =
 		Orbit(parent, semi_major_axis, eccentricity, nothing, inclination, nothing, nothing)
 		
-	Body(name::String, mass::Unitful.Mass, radius::Unitful.Length, bond_albedo::Real) =
+	Body(name::String, mass::Unitful.Mass, radius::Unitful.Length, bond_albedo::Union{Nothing, Rotation} = nothing) =
 		Body(name, mass, radius, radius, bond_albedo, nothing, nothing)
 
 	#####################################################################################
@@ -87,11 +87,11 @@ julia> gravity(SfSolarSystem.moon)
 	kinetic_energy(body::Body) = kinetic_energy(body.mass, body.orbit)
 	
 	"""
-	stellar_luminosity(r_star::Unitful.Length, t_surface::Unirful.Temperature)
+	stellar_luminosity(r_star::Unitful.Length, t_surface::Unitful.Temperature)
 	
 Approximate the luminosity of a star with radius `r_star` and surface temperature `t_surface`.
 """
-	stellar_luminosity(r_star::Unitful.Length, t_surface::Unirful.Temperature) = 4π * r_star^2 * σ * t_star^4 |>u"W"
+	stellar_luminosity(r_star::Unitful.Length, t_surface::Unitful.Temperature) = 4π * r_star^2 * σ * t_star^4 |>u"W"
 	
 	"""
 	stellar_irradiance = function(l_stellar::Unitful.Power, r_orbit::Unitful.Length, r_body::Unitful.Length)
