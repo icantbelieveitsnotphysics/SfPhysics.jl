@@ -107,4 +107,16 @@ Compute the proportion of a star's luminosity that falls upon a circular body of
 	
 	planetary_equilibrium_temperature(l_stellar::Unitful.Power, r_orbit::Unitful.Length, r_body::Unitful.Length, bond_albedo::Real) =
 		planetary_equilibrium_temperature(solar_irradiance(s_l, r_orbit, r_body) / (π * r_body^2), bond_albedo) |> u"K"
+		
+	# temperature, exosphere altiutude, planetary mass, planetary radius, gas molecular mass
+	# http://cococubed.asu.edu/code_pages/jeans_escape.shtml
+	function jeans_escape_timescale(T::Unitful.Temperature, h::Unitful.Length, M::Unitful.Mass, R::Unitful.Length, m::Unitful.Mass)
+       g = (G*M)/(R+h)^2
+       H = (k_B*T)/(m*g) # scale height for gas
+       v_peak=sqrt((2k_B*T)/m) # peak of maxwell-boltzmann distribution
+       v_esc=sqrt((2G*M)/(R+h)) # escape velocity of planet at exosphere altitude
+       λ =(v_esc/v_peak)^2
+	   v_jeans = v_peak * ((1 + λ)*exp(-λ))/sqrt(4π)
+       return H/v_jeans |> u"yr"
+    end
 end
