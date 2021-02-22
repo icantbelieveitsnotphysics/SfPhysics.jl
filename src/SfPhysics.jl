@@ -26,4 +26,10 @@ include("solar.jl")
 
 export SfSolarSystem
 
+include("materials.jl")
+
+include("laser.jl")
+
+@reexport using .SfLaser
+
 end
