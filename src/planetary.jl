@@ -49,10 +49,11 @@ module SfPlanetary
 	import ..SfRelativity: relativistic_kinetic_energy
 	import ..SfPhysics: kinetic_energy, spherical_cap_solid_angle
 	
-	import PhysicalConstants.CODATA2018: σ # Stefan-Boltzmann constant
+	import PhysicalConstants.CODATA2018: σ, G, k_B # σ = Stefan-Boltzmann constant, k_B Boltzmann constant
 	
 	export gravity, planetary_mass, planetary_radius, orbital_period, orbital_radius, orbital_velocity, escape_velocity, hill_sphere,
-		relativistic_kinetic_energy, kinetic_energy, stellar_irradiance, planetary_equilibrium_temperature
+		relativistic_kinetic_energy, kinetic_energy, stellar_irradiance, planetary_equilibrium_temperature,
+		jeans_escape_timescale, jeans_parameter
 
 	"""
 	gravity(body::Body)
@@ -119,4 +120,9 @@ Compute the proportion of a star's luminosity that falls upon a circular body of
 	   v_jeans = v_peak * ((1 + λ)*exp(-λ))/sqrt(4π)
        return H/v_jeans |> u"yr"
     end
+	
+	# https://arxiv.org/ftp/arxiv/papers/1009/1009.5110.pdf
+	# https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2008GL036513
+	jeans_parameter(m_planet::Unitful.Mass, m_molecule::Unitful.Mass, t_exosphere::Unitful.Temperature, r_exosphere::Unitful.Length) = 
+		(G * m_planet * m_molecule) / (k_B * t_exosphere * r_exosphere) |> u"m/m"
 end
