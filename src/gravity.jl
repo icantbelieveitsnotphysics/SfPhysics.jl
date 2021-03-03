@@ -1,8 +1,7 @@
 module SfGravity
 
-	using PhysicalConstants.CODATA2018: c_0, g_n, G, StefanBoltzmannConstant, ħ, k_B
-using Unitful
-using UnitfulAstro
+using PhysicalConstants.CODATA2018: c_0, g_n, G, StefanBoltzmannConstant, ħ, k_B
+using Unitful, UnitfulAstro
 
 export vis_viva, gravity, planetary_mass, planetary_radius, escape_velocity, hill_sphere,
 	orbital_velocity, orbital_period, gravitational_binding_energy
