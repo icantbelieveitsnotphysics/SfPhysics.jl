@@ -1,8 +1,6 @@
 using Unitful
 using .SfElectro
 
-import .SfElectro.Tesla
-
 export cratering_depth, cratering_strength, cratering_volume, jet_penetrator, newtonian_penetrator, coilgun_velocity
 
 function cratering_strength(yield_strength::Unitful.Pressure)
@@ -39,7 +37,7 @@ newtonian_penetrator(l::Unitful.Length, ρj::Unitful.Density, ρt::Unitful.Densi
 	
 Use Luke Campbell's coilgun approximation to compute muzzle velocity of a cylindrical projectile of mass `m` and radius `r` firing down a barrel of length `l` in a unitform magnetic field of strength `b`.
 """
-function coilgun_velocity(m::Unitful.Mass, r::Unitful.Length, l::Unitful.Length, b::Tesla)
+function coilgun_velocity(m::Unitful.Mass, r::Unitful.Length, l::Unitful.Length, b::Unitful.BField)
 	ed = energy_density(b)
 	v = π * r^2 * l
 	e = ed * v
