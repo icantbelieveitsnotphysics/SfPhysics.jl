@@ -1,7 +1,8 @@
 using Unitful
 using .SfElectro
 
-export cratering_depth, cratering_strength, cratering_volume, jet_penetrator, newtonian_penetrator, coilgun_velocity
+export cratering_depth, cratering_strength, cratering_volume, jet_penetrator, newtonian_penetrator, coilgun_velocity, coilgun_field_strength,
+	coilgun_length
 
 function cratering_strength(yield_strength::Unitful.Pressure)
     3u"J/m^3" * Unitful.ustrip(u"Pa", yield_strength)
@@ -43,4 +44,29 @@ function coilgun_velocity(m::Unitful.Mass, r::Unitful.Length, l::Unitful.Length,
 	e = ed * v
 	
 	return sqrt(2e / m) |> u"km/s"
+end
+
+"""
+    coilgun_field_strength(m::Unitful.Mass, r::Unitful.Length, l::Unitful.Length, v::Unitful.Velocity)
+	
+Use Luke Campbell's coilgun approximation to compute magnetic field strength of a coilgun of length `l` firing a cylindrical projectile of mass `m` and radius `r` at velocity `v`.
+"""
+function coilgun_field_strength(m::Unitful.Mass, r::Unitful.Length, l::Unitful.Length, v::Unitful.Velocity)
+	ke = 0.5m*v^2
+	v = π * r^2 * l
+	
+	return field_strength(ke/v)
+end
+
+"""
+    coilgun_length(m::Unitful.Mass, r::Unitful.Length, b::Unitful.BField, v::Unitful.Velocity)
+	
+Use Luke Campbell's coilgun approximation to compute length of a coilgun with a field strength of `b`, firing a cylindrical projectile of mass `m` and radius `r` at muzzle velocity `v`.
+"""
+function coilgun_length(m::Unitful.Mass, r::Unitful.Length, b::Unitful.BField, v::Unitful.Velocity)
+	ed = energy_density(b)
+	ke = 0.5m*v^2
+	a = π * r^2
+	
+	return ke / (ed*a)|>u"m"
 end
