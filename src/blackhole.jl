@@ -1,3 +1,5 @@
+import PhysicalConstants.CODATA2018: G, ħ, c_0
+
 export spaghettification_tensile_force, schwarzschild_radius, hawking_temperature, bekenstein_hawking_luminosity, hawking_evaporation
 
 spaghettification_tensile_force(m_parent::Unitful.Mass, m::Unitful.Mass, l::Unitful.Length, r::Unitful.Length) = (G*m_parent*l*m)/4r^3 |> u"N"
