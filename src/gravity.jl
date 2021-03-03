@@ -134,4 +134,11 @@ function hill_sphere(m_parent::Unitful.Mass, m::Unitful.Mass, sma::Unitful.Lengt
 	sma * (1-e) * cbrt(m / 3m_parent) |> Unitful.unit(sma)
 end
 
+"""
+	gravitational_binding_energy(m::Unitful.Mass, r::Unitful.Length)
+	
+Calculate the gravitational binding energy of a body with mass `m` and radius `r`.
+"""
+gravitational_binding_energy(m::Unitful.Mass, r::Unitful.Length) = (3G*m^2) / 5r
+
 end
