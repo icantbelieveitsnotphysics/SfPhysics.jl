@@ -11,8 +11,6 @@ include("blackhole.jl")
 include("rocketry.jl")
 
 @reexport using .SfRocketry
-
-include("weaponry.jl")
 include("kinematics.jl")
 include("kinetics.jl")
 include("relativity.jl")
@@ -27,9 +25,18 @@ include("solar.jl")
 export SfSolarSystem
 
 include("materials.jl")
-
 include("laser.jl")
 
 @reexport using .SfLaser
+
+include("coriolis.jl")
+
+@reexport using .SfCoriolis
+
+include("electro.jl")
+
+@reexport using .SfElectro
+
+include("weaponry.jl")
 
 end
