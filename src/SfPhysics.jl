@@ -17,6 +17,7 @@ include("relativity.jl")
 
 @reexport using .SfRelativity
 
+include("materials.jl")
 include("planetary.jl")
 include("solar.jl")
 
@@ -24,7 +25,6 @@ include("solar.jl")
 
 export SfSolarSystem
 
-include("materials.jl")
 include("laser.jl")
 
 @reexport using .SfLaser

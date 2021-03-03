@@ -4,7 +4,7 @@ using PhysicalConstants.CODATA2018: c_0, g_n, G, StefanBoltzmannConstant, ħ, k_
 using Unitful, UnitfulAstro
 
 export vis_viva, gravity, planetary_mass, planetary_radius, escape_velocity, hill_sphere,
-	orbital_velocity, orbital_period, gravitational_binding_energy
+	orbital_velocity, orbital_period, gravitational_binding_energy, roche_limit
 
 function vis_viva(parent_mass::Unitful.Mass, semimajor_axis::Unitful.Length, current_radius::Unitful.Length)
 	G*parent_mass*(2/current_radius - 1/semimajor_axis) |> u"m^2/s^2"
@@ -139,5 +139,12 @@ end
 Calculate the gravitational binding energy of a body with mass `m` and radius `r`.
 """
 gravitational_binding_energy(m::Unitful.Mass, r::Unitful.Length) = (3G*m^2) / 5r |>u"J"
+
+"""
+   roche_limit(r_primary::Unitful.Length, ρ_primary::Unitful.Density, ρ_satellite::Unitful.Density)
+   
+Rigid body approximation of the Roche limit for a body with radius `r_primary` and density `ρ_primary`, approached by a body with density `ρ_satellite`.
+"""
+roche_limit(r_primary::Unitful.Length, ρ_primary::Unitful.Density, ρ_satellite::Unitful.Density) = r_primary * cbrt(2ρ_primary / ρ_satellite) |> u"km"
 
 end

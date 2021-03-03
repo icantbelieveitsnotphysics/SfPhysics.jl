@@ -58,15 +58,15 @@ module SfPlanetary
 	#####################################################################################
 	
 	import ..SfGravity: gravity, planetary_mass, planetary_radius, orbital_period, orbital_radius, orbital_velocity, escape_velocity, 
-		hill_sphere, gravitational_binding_energy
+		hill_sphere, gravitational_binding_energy, roche_limit
 	import ..SfRelativity: relativistic_kinetic_energy
-	import ..SfPhysics: kinetic_energy, spherical_cap_solid_angle
+	import ..SfPhysics: kinetic_energy, spherical_cap_solid_angle, density
 	
 	import PhysicalConstants.CODATA2018: σ, G, k_B # σ = Stefan-Boltzmann constant, k_B Boltzmann constant
 	
 	export gravity, planetary_mass, planetary_radius, orbital_period, orbital_radius, orbital_velocity, escape_velocity, hill_sphere,
 		relativistic_kinetic_energy, kinetic_energy, stellar_irradiance, planetary_equilibrium_temperature,
-		jeans_escape_timescale, jeans_parameter, gravitational_binding_energy
+		jeans_escape_timescale, jeans_parameter, gravitational_binding_energy, roche_limit, volume, density
 
 	"""
 	gravity(body::Body)
@@ -101,6 +101,12 @@ julia> gravity(SfSolarSystem.moon)
 
 	kinetic_energy(mass::Unitful.Mass, orbit::Orbit) = kinetic_energy(mass, orbital_velocity(orbit))
 	kinetic_energy(body::Body) = kinetic_energy(body.mass, body.orbit)
+	
+	roche_limit(primary::Body, satellite::Body) = roche_limit(primary.equatorial_radius, density(primary), density(satellite))
+	
+	volume(body::Body) = (4π * body.equatorial_radius^2 * body.polar_radius) / 3 |> u"km^3"
+	
+	density(body::Body) = body.mass / volume(body) |> u"kg/m^3"
 	
 	"""
 	stellar_luminosity(r_star::Unitful.Length, t_surface::Unitful.Temperature)
