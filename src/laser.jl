@@ -2,7 +2,7 @@ module SfLaser
 
 using Unitful
 
-export diffraction_limited_element_size, diffraction_limited_range, diffraction_limited_spot_diameter, diffraction_limited_wavelength
+export diffraction_limited_element_size, diffraction_limited_range, diffraction_limited_spot_diameter, diffraction_limited_wavelength,
 	attenuated_beam_power, approximate_breakdown_threshold, beam_intensity
 
 function diffraction_limited_spot_diameter(range::Unitful.Length, element_diameter::Unitful.Length, wavelength::Unitful.Length)
