@@ -68,7 +68,7 @@ Calculate the semimajor axis of an orbit with period `t` about a body with mass 
 	"""
 	orbital_velocity(sma::Unitful.Length, t::Unitful.Time)
 	
-Calculate the average orbital velocity of a circular orbit of period `t` by a body with mass `m`.
+Calculate the average orbital velocity of a circular orbit of period `t`.
 
 The orbit is assumed to be circular.
 	"""
@@ -77,7 +77,7 @@ The orbit is assumed to be circular.
 	"""
     orbital_velocity(sma::Unitful.Length, t::Unitful.Time, e)
 	
-Approximate the average orbital velocity of a orbit with eccentricity `e` and period `t` by a body with mass `m`.
+Approximate the average orbital velocity of a orbit with eccentricity `e` and period `t`.
 	"""
 	function orbital_velocity(sma::Unitful.Length, t::Unitful.Time, e)
 		(2π * sma / t) * (1 - e^2 / 4 - 3e^4 / 64 - 5e^6 / 256 - 175e^8 / 16384) |> u"km/s"
