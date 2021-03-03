@@ -1,15 +1,15 @@
 module SfGravity
 
 	using PhysicalConstants.CODATA2018: c_0, g_n, G, StefanBoltzmannConstant, ħ, k_B
-	using Unitful
-	using UnitfulAstro
-	
-	export vis_viva, gravity, planetary_mass, planetary_radius, escape_velocity, hill_sphere,
-		orbital_velocity, orbital_period
+using Unitful
+using UnitfulAstro
 
-	function vis_viva(parent_mass::Unitful.Mass, semimajor_axis::Unitful.Length, current_radius::Unitful.Length)
-		G*parent_mass*(2/current_radius - 1/semimajor_axis) |> u"m^2/s^2"
-	end
+export vis_viva, gravity, planetary_mass, planetary_radius, escape_velocity, hill_sphere,
+	orbital_velocity, orbital_period, gravitational_binding_energy
+
+function vis_viva(parent_mass::Unitful.Mass, semimajor_axis::Unitful.Length, current_radius::Unitful.Length)
+	G*parent_mass*(2/current_radius - 1/semimajor_axis) |> u"m^2/s^2"
+end
 
 """
 	gravity(m::Unitful.Mass, r::Unitful.Length)
@@ -139,6 +139,6 @@ end
 	
 Calculate the gravitational binding energy of a body with mass `m` and radius `r`.
 """
-gravitational_binding_energy(m::Unitful.Mass, r::Unitful.Length) = (3G*m^2) / 5r
+gravitational_binding_energy(m::Unitful.Mass, r::Unitful.Length) = (3G*m^2) / 5r |>u"J"
 
 end

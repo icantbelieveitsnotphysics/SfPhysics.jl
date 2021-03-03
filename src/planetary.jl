@@ -45,7 +45,8 @@ module SfPlanetary
 
 	#####################################################################################
 	
-	import ..SfGravity: gravity, planetary_mass, planetary_radius, orbital_period, orbital_radius, orbital_velocity, escape_velocity, hill_sphere
+	import ..SfGravity: gravity, planetary_mass, planetary_radius, orbital_period, orbital_radius, orbital_velocity, escape_velocity, 
+		hill_sphere, gravitational_binding_energy
 	import ..SfRelativity: relativistic_kinetic_energy
 	import ..SfPhysics: kinetic_energy, spherical_cap_solid_angle
 	
@@ -53,7 +54,7 @@ module SfPlanetary
 	
 	export gravity, planetary_mass, planetary_radius, orbital_period, orbital_radius, orbital_velocity, escape_velocity, hill_sphere,
 		relativistic_kinetic_energy, kinetic_energy, stellar_irradiance, planetary_equilibrium_temperature,
-		jeans_escape_timescale, jeans_parameter
+		jeans_escape_timescale, jeans_parameter, gravitational_binding_energy
 
 	"""
 	gravity(body::Body)
@@ -83,6 +84,8 @@ julia> gravity(SfSolarSystem.moon)
 
 	hill_sphere(body::Body) = hill_sphere(body.orbit.parent.mass, body.mass, body.orbit.semi_major_axis, body.orbit.eccentricity)
 	hill_sphere(orbit::Orbit, mass::Unitful.Mass) = hill_sphere(orbit.parent.mass, mass, orbit.semi_major_axis, orbit.eccentricity)
+	
+	gravitational_binding_energy(body::Body) = gravitational_binding_energy(body.mass, body.equatorial_radius)
 
 	kinetic_energy(mass::Unitful.Mass, orbit::Orbit) = kinetic_energy(mass, orbital_velocity(orbit))
 	kinetic_energy(body::Body) = kinetic_energy(body.mass, body.orbit)
