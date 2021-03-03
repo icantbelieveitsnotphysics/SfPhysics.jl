@@ -6,8 +6,12 @@ module SfPlanetary
 	
 	export Body, Orbit, Rotation
 
-	const Degree{T} = Quantity{T, NoDims, typeof(u"°")}
+	const Angle{T} = Union{ Quantity{T, NoDims, typeof(u"°")}, Quantity{T, NoDims, typeof(u"rad")} }
 	@derived_dimension ThermalFlux Unitful.𝐌*Unitful.𝐓^-3
+	
+	to_angle(a::Real) = Angle(a * u"°")	
+	to_angle(a::Angle) = a
+	to_angle(::Nothing) = nothing
 
 	abstract type AbstractBody end
 
@@ -15,16 +19,15 @@ module SfPlanetary
 		parent::AbstractBody
 		semi_major_axis::Unitful.Length
 		eccentricity::Real
-		mean_anomaly::Union{Nothing, Degree}
-		inclination::Degree # relative to equator of parent body
-		ascending_node::Union{Nothing, Degree}
-		periapsis::Union{Nothing, Degree}
+		inclination::Angle # relative to equator of parent body
+		ascending_node::Union{Nothing, Angle}
+		periapsis::Union{Nothing, Angle}
 	end
 
 	struct Rotation
 		moment_of_inertia::Union{Nothing, Real}
 		rotation_period::Unitful.Time
-		axial_tilt::Degree	
+		axial_tilt::Angle	
 	end
 
 	struct Body <: AbstractBody
@@ -37,11 +40,20 @@ module SfPlanetary
 		rotation::Union{Nothing, Rotation}
 	end
 
-	Orbit(parent::AbstractBody, semi_major_axis::Unitful.Length, eccentricity::Real, inclination::Degree) =
-		Orbit(parent, semi_major_axis, eccentricity, nothing, inclination, nothing, nothing)
+	Orbit(parent::AbstractBody, 
+			semi_major_axis::Unitful.Length, eccentricity::Real, 
+			inclination::Real, ascending_node::Union{Nothing, Real} = nothing, periapsis::Union{Nothing, Real} = nothing) =
+		Orbit(parent, semi_major_axis, eccentricity, to_angle(inclination), to_angle(ascending_node), to_angle(periapsis))
 		
-	Body(name::String, mass::Unitful.Mass, radius::Unitful.Length, bond_albedo::Union{Nothing, Rotation} = nothing) =
+	# needed to avoid some awkward ambiguous method resolution issues :(
+	Orbit(parent::AbstractBody, semi_major_axis::Unitful.Length, eccentricity::Real, inclination::Angle) =
+		Orbit(parent, semi_major_axis, eccentricity, to_angle(inclination), nothing, nothing)
+		
+	Body(name::String, mass::Unitful.Mass, radius::Unitful.Length, bond_albedo::Union{Nothing, Real} = nothing) =
 		Body(name, mass, radius, radius, bond_albedo, nothing, nothing)
+		
+	Rotation(moment_of_inertia::Union{Nothing, Real}, rotation_period::Unitful.Time, axial_tilt::Real) =
+		Rotation(moment_of_inertia, rotation_period, to_angle(axial_tilt))
 
 	#####################################################################################
 	
