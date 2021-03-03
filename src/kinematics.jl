@@ -1,6 +1,6 @@
 using Unitful
 
-export distance, duration
+export distance, duration, acceleration
 
 """
     distance(a::Unitful.Acceleration, t::Unitful.Time, initial_v::Unitful.Velocity = 0u"m/s")
@@ -51,3 +51,10 @@ function duration(a::Unitful.Acceleration, d::Unitful.Length, initial_v::Unitful
         return min(t1, t2)
     end
 end
+
+"""
+    acceleration(d::Unitful.Length, v_final::Unitful.Velocity, v_initial::Unitful.Velocity = 0u"m/s")
+	
+Given a distance `d`, initial velocity `v_initial and desired velocity `v_final` compute the required uniform acceleration
+"""
+acceleration(d::Unitful.Length, v_final::Unitful.Velocity, v_initial::Unitful.Velocity = 0u"m/s") = (v_final^2 - v_initial^2) / 2d
