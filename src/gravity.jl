@@ -82,8 +82,20 @@ Approximate the average orbital velocity of a orbit with eccentricity `e` and pe
 function orbital_velocity(sma::Unitful.Length, t::Unitful.Time, e)
 	(2π * sma / t) * (1 - e^2 / 4 - 3e^4 / 64 - 5e^6 / 256 - 175e^8 / 16384) |> u"km/s"
 end
-	
+
+"""
+    orbital_velocity(parent_mass::Unitful.Mass, semimajor_axis::Unitful.Length, current_radius::Unitful.Length)
+
+Approximate the orbital velocity of a body with an eccentric orbit with `semimajor_axis` and current orbital radius `current_radius` about a body of mass `parent_mass`	
+"""	
 orbital_velocity(parent_mass::Unitful.Mass, semimajor_axis::Unitful.Length, current_radius::Unitful.Length) = sqrt(vis_viva(parent_mass, sem, current_radius)) |> u"km/s"
+
+"""
+    orbital_velocity(parent_mass::Unitful.Mass, radius::Unitful.Length)
+	
+Approximate the orbital velocity of a body with a circular orbit of radius `radius` about a body with mass `parent_mass`.
+"""
+orbital_velocity(parent_mass::Unitful.Mass, radius::Unitful.Length) = sqrt(G * parent_mass / radius) |> u"km/s"
 	
 """
 	planetary_mass(orbital_radius::Unitful.Length, orbital_period::Unitful.Time)
