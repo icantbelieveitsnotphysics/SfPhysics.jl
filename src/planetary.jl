@@ -65,7 +65,7 @@ module SfPlanetary
 	import PhysicalConstants.CODATA2018: σ, G, k_B # σ = Stefan-Boltzmann constant, k_B Boltzmann constant
 	
 	export gravity, planetary_mass, planetary_radius, orbital_period, orbital_radius, orbital_velocity, escape_velocity, hill_sphere,
-		relativistic_kinetic_energy, kinetic_energy, stellar_irradiance, planetary_equilibrium_temperature,
+		relativistic_kinetic_energy, kinetic_energy, stellar_luminosity, stellar_irradiance, planetary_equilibrium_temperature,
 		jeans_escape_timescale, jeans_parameter, gravitational_binding_energy, roche_limit, volume, density
 
 	"""
@@ -113,7 +113,7 @@ julia> gravity(SfSolarSystem.moon)
 	
 Approximate the luminosity of a star with radius `r_star` and surface temperature `t_surface`.
 """
-	stellar_luminosity(r_star::Unitful.Length, t_surface::Unitful.Temperature) = 4π * r_star^2 * σ * t_star^4 |>u"W"
+	stellar_luminosity(r_star::Unitful.Length, t_surface::Unitful.Temperature) = 4π * r_star^2 * σ * t_surface^4 |>u"W"
 	
 	"""
 	stellar_irradiance = function(l_stellar::Unitful.Power, r_orbit::Unitful.Length, r_body::Unitful.Length)
