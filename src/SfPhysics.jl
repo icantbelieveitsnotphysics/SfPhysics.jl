@@ -39,4 +39,8 @@ include("electro.jl")
 
 include("weaponry.jl")
 
+include("astronomy.jl")
+
+@reexport using .SfAstronomy
+
 end
