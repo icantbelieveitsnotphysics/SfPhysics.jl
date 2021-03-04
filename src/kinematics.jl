@@ -1,6 +1,16 @@
-using Unitful
+﻿using Unitful
 
-export distance, duration, acceleration
+import PhysicalConstants.CODATA2018: g_n
+
+export distance, duration, acceleration, projectile_displacement, projectile_velocity, projectile_flight_time, projectile_peak_displacement
+
+# making vectors of abstract unitful types like Unitful.Acceleration is a right pain, and this is much simpler
+const Accel{T} = Unitful.AbstractQuantity{T,Unitful.𝐋*Unitful.𝐓^-2,typeof(u"m/s/s")}
+const AccelerationVector{T} = Vector{Accel{T}}
+const Speed{T} = Quantity{T,Unitful.𝐋*Unitful.𝐓^-1,typeof(u"m/s")}
+const SpeedVector{T} = Vector{Speed{T}}
+
+const Angle{T} = Union{ Quantity{T, NoDims, typeof(u"°")}, Quantity{T, NoDims, typeof(u"rad")} }
 
 """
     distance(a::Unitful.Acceleration, t::Unitful.Time, initial_v::Unitful.Velocity = 0u"m/s")
@@ -58,3 +68,49 @@ end
 Given a distance `d`, initial velocity `v_initial and desired velocity `v_final` compute the required uniform acceleration
 """
 acceleration(d::Unitful.Length, v_final::Unitful.Velocity, v_initial::Unitful.Velocity = 0u"m/s") = (v_final^2 - v_initial^2) / 2d
+
+"""
+    projectile_displacement(v_0::Unitful.Velocity, θ::Angle, t::Unitful.Time, g::Accel = g_n)
+	
+Horizontal and vertical displacement at time `t` of a projectile with initial velocity `v_0` and launch angle `θ` in a unitform gravitational acceleration `g`.
+"""
+projectile_displacement(v_0::Unitful.Velocity, θ::Angle, t::Unitful.Time, g::Accel = g_n) =
+    [ v_0 * t * cos(θ), v_0 * t * sin(θ) - 0.5g * t^2 ]
+
+"""
+    projectile_displacement(v_0::Unitful.Velocity, t::Unitful.Time, g::Accel = g_n)
+	
+Vertical displacement at time `t` of a projectile launched vertically with initial velocity `v_0` in a unitform gravitational acceleration `g`.
+"""
+projectile_displacement(v_0::Unitful.Velocity, t::Unitful.Time, g::Accel = g_n) = projectile_displacement(v_0, 90u"°", g, t)[2]
+
+"""
+    projectile_velocity(v_0::Unitful.Velocity, θ::Angle, t::Unitful.Time, g::Accel = g_n)
+	
+Horizontal and vertical velocity at time `t` of a projectile with initial velocity `v_0` and launch angle `θ` in a unitform gravitational acceleration `g`.
+"""
+projectile_velocity(v_0::Unitful.Velocity, θ::Angle, t::Unitful.Time, g::Accel = g_n) =
+    [ v_0 * cos(θ), v_0 * sin(θ) - g * t ]
+
+"""
+    projectile_velocity(v_0::Unitful.Velocity, t::Unitful.Time, g::Accel = g_n)
+	
+Velocity at time `t` of a projectile launched vertically with initial velocity `v_0` in a unitform gravitational acceleration `g`.
+"""
+projectile_velocity(v_0::Unitful.Velocity, t::Unitful.Time, g::Accel = g_n) = projectile_velocity(v_0, 90u"°", g, t)[2]
+
+"""
+    projectile_flight_time(v_0::Unitful.Velocity, θ::Angle = 90u"°", g::Accel = g_n)
+	
+Compute total flight time for a projectile launched at angle `θ` with initial velocity `v_0` in a uniform gravitation acceleration `g`.
+
+Flight is considered to be complete when vertical displacement returns to zero.
+"""
+projectile_flight_time(v_0::Unitful.Velocity, θ::Angle = 90u"°", g::Accel = g_n) = 2v_0 * sin(θ) / g |> u"s"
+
+"""
+    projectile_peak_displacement(v_0::Unitful.Velocity, θ::Angle = 90u"°", g::Accel = g_n)
+	
+Compute peak altitude of a projectile launched at angle `θ` with initial velocity `v_0` in a uniform gravitation acceleration `g`.
+"""
+projectile_peak_displacement(v_0::Unitful.Velocity, θ::Angle = 90u"°", g::Accel = g_n) = v_0^2 / 2g
