@@ -4,7 +4,8 @@ using PhysicalConstants.CODATA2018: c_0, g_n, G, StefanBoltzmannConstant, ħ, k_
 using Unitful, UnitfulAstro
 
 export vis_viva, gravity, planetary_mass, planetary_radius, escape_velocity, hill_sphere,
-	orbital_velocity, orbital_period, gravitational_binding_energy, roche_limit
+	orbital_velocity, orbital_period, gravitational_binding_energy, roche_limit, gravity_tug_mass,
+	barycentric_distance
 
 function vis_viva(parent_mass::Unitful.Mass, semimajor_axis::Unitful.Length, current_radius::Unitful.Length)
 	G*parent_mass*(2/current_radius - 1/semimajor_axis) |> u"m^2/s^2"
@@ -63,6 +64,13 @@ orbital_period(m::Unitful.Mass, r::Unitful.Length) = sqrt((4π^2 * r^3) / (G * m
 Calculate the semimajor axis of an orbit with period `t` about a body with mass `m`.
 """
 orbital_radius(m::Unitful.Mass, t::Unitful.Time) = cbrt((t^2 * G * m)/(4π^2)) |> u"m"
+
+"""
+    orbital_radius(m::Unitful.Mass, v::Unitful.Velocity)
+	
+Approximate the radius of a circular orbit with velocity `v` about a body with mass `m`.
+"""
+orbital_radius(m::Unitful.Mass, v::Unitful.Velocity) = (G * m) / v^2 |> u"m"
 	
 """
 	orbital_velocity(sma::Unitful.Length, t::Unitful.Time)
@@ -146,5 +154,19 @@ gravitational_binding_energy(m::Unitful.Mass, r::Unitful.Length) = (3G*m^2) / 5r
 Rigid body approximation of the Roche limit for a body with radius `r_primary` and density `ρ_primary`, approached by a body with density `ρ_satellite`.
 """
 roche_limit(r_primary::Unitful.Length, ρ_primary::Unitful.Density, ρ_satellite::Unitful.Density) = r_primary * cbrt(2ρ_primary / ρ_satellite) |> u"km"
+
+"""
+    gravity_tug_mass(force::Unitful.Force, separation::Unitful.Length, body_mass::Unitful.Mass)
+	
+Compute the mass required to apply `force` to a body of mass `body_mass` given their barycenters are at a distance of `separated`.
+"""
+gravity_tug_mass(force::Unitful.Force, separation::Unitful.Length, body_mass::Unitful.Mass) = (force * separation^2)/(G * body_mass) |> u"kg"
+
+"""
+    barycentric_distance(m_1::Unitful.Mass, m_2::Unitful.Mass, a::Unitful.Length)
+	
+Compute the distance from the barycenter of `m_1` to the barycenter of the `m_1`-`m_2` system, where the masses have an average separation of `a`.
+"""
+barycentric_distance(m1::Unitful.Mass, m2::Unitful.Mass, a::Unitful.Length) = (a * m2) / (m1 + m2) |> u"km"
 
 end
