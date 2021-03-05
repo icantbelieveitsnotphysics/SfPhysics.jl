@@ -2,7 +2,8 @@
 
 import PhysicalConstants.CODATA2018: g_n
 
-export distance, duration, acceleration, projectile_displacement, projectile_velocity, projectile_flight_time, projectile_peak_displacement
+export distance, duration, acceleration, projectile_displacement, projectile_velocity, projectile_flight_time, 
+	projectile_peak_displacement, projectile_range, projectile_angle
 
 # making vectors of abstract unitful types like Unitful.Acceleration is a right pain, and this is much simpler
 const Accel{T} = Unitful.AbstractQuantity{T,Unitful.𝐋*Unitful.𝐓^-2,typeof(u"m/s/s")}
@@ -112,5 +113,67 @@ projectile_flight_time(v_0::Unitful.Velocity, θ::Angle = 90u"°", g::Accel = g_
     projectile_peak_displacement(v_0::Unitful.Velocity, θ::Angle = 90u"°", g::Accel = g_n)
 	
 Compute peak altitude of a projectile launched at angle `θ` with initial velocity `v_0` in a uniform gravitation acceleration `g`.
+
+Default launch angle is 90° for maximum height.
 """
-projectile_peak_displacement(v_0::Unitful.Velocity, θ::Angle = 90u"°", g::Accel = g_n) = v_0^2 / 2g
+projectile_peak_displacement(v_0::Unitful.Velocity, θ::Angle = 90u"°", g::Accel = g_n) = (v_0^2 * sin(θ)^2) / 2g
+
+"""
+    projectile_range(v_0::Unitful.Velocity, θ::Angle = 45u"°", g::Accel = g_n)
+	
+Compute range of a projectile launched at angle `θ` with initial velocity `v_0` in a uniform gravitation acceleration `g`.
+
+Default launch angle is 45° for maximum range.
+"""
+projectile_range(v_0::Unitful.Velocity, θ::Angle = 45u"°", g::Accel = g_n) = (v_0^2 * sin(2θ)) / g
+
+"""
+    projectile_range(v_0::Unitful.Velocity, y_0::Unitful.Length, θ::Angle = 45u"°", g::Accel = g_n)
+	
+Compute range of a projectile launched from altitude `y_0` at angle `θ` with initial velocity `v_0` in a uniform gravitation acceleration `g`.
+
+Range is reached when vertical displacement is zero. Default launch angle is 45° for maximum range.
+"""
+projectile_range(v_0::Unitful.Velocity, y_0::Unitful.Length, θ::Angle = 45u"°", g::Accel = g_n) =
+	(v_0 * cos(θ) / g) * (v_0 * sin(θ) + sqrt((v_0 * sin(θ))^2 + 2g * y_0))
+	
+"""
+    projectile_angle(v_0::Unitful.Velocity, d::Unitful.Length, g::Accel = g_n)
+	
+Compute the possible launch angles for a projectile to reach a horizontal range of `d` given initial velocity `v_0` in a uniform gravitation acceleration `g`.
+
+The shallow angle is the first result, the steep angle the second. A domain error is raised if the target is out of range.
+"""
+function projectile_angle(v_0::Unitful.Velocity, d::Unitful.Length, g::Accel = g_n)
+	k = (g * d) / v_0^2
+	
+	if (k > 1)
+		throw(DomainError("Target out of range; no solutions"))
+	end
+	
+	return ( 0.5asin(k) * 1u"rad" |> u"°", 45u"°" + (0.5acos(k) * 1u"rad" |> u"°") )
+end
+	
+"""
+    projectile_angle(v_0::Unitful.Velocity, d::Unitful.Length, y::Unitful.Length, g::Accel = g_n)
+	
+Compute the possible launch angles for a projectile to reach a horizontal range of `d` and altitude of `y` relative to the starting point given initial velocity `v_0` in a uniform gravitation acceleration `g`.
+
+The shallow angle is the first result, the steep angle the second. A domain error is raised if the target is out of range.
+"""
+function projectile_angle(v_0::Unitful.Velocity, d::Unitful.Length, y::Unitful.Length, g::Accel = g_n)
+	det = v_0^4 - g * (g * d^2 + 2y * v_0^2)
+	
+	if (ustrip(det) < 0)
+		throw(DomainError("Target out of range; no solutions"))
+	end
+	
+	a = atan((v_0^2 + sqrt(det)) / (g * d)) * 1u"rad" |> u"°"
+	b = atan((v_0^2 - sqrt(det)) / (g * d)) * 1u"rad" |> u"°"
+	
+	if a < b
+		return (a, b)
+	else
+		return (b, a)
+	end
+end
