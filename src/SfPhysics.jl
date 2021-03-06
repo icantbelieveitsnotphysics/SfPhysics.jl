@@ -8,11 +8,16 @@ include("blackhole.jl")
 
 @reexport using .SfGravity
 
+include("kinematics.jl")
+include("kinetics.jl")
+include("fluid-dynamics.jl")
+
+@reexport using .SfFluidDynamics
+
 include("rocketry.jl")
 
 @reexport using .SfRocketry
-include("kinematics.jl")
-include("kinetics.jl")
+
 include("relativity.jl")
 
 @reexport using .SfRelativity

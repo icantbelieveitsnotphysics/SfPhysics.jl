@@ -2,7 +2,7 @@ module SfAstronomy
 
 using Unitful, UnitfulAstro
 
-const Angle{T} = Union{ Quantity{T, NoDims, typeof(u"°")}, Quantity{T, NoDims, typeof(u"rad")} }
+import ..SfPhysics: Angle, to_angle
 
 export absolute_magnitude, apparent_magnitude, diffuse_disc_q, diffuse_sphere_q
 

@@ -3,7 +3,7 @@ module SfRocketry
 import PhysicalConstants.CODATA2018: c_0, g_n
 using Unitful
 
-const Angle{T} = Union{ Quantity{T, NoDims, typeof(u"°")}, Quantity{T, NoDims, typeof(u"rad")} }
+import ..SfPhysics: Angle, to_angle
 
 export rocket_propulsive_efficiency, brachistochrone_transit_time, brachistochrone_acceleration, brachistochrone_delta_v,
 	boost_coast_transit_time, coasting_coast_time, beam, mass_ratio, delta_v, rocket_thrust, rocket_power,

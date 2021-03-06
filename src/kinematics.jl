@@ -8,10 +8,14 @@ export distance, duration, acceleration, projectile_displacement, projectile_vel
 # making vectors of abstract unitful types like Unitful.Acceleration is a right pain, and this is much simpler
 const Accel{T} = Unitful.AbstractQuantity{T,Unitful.𝐋*Unitful.𝐓^-2,typeof(u"m/s/s")}
 const AccelerationVector{T} = Vector{Accel{T}}
-const Speed{T} = Quantity{T,Unitful.𝐋*Unitful.𝐓^-1,typeof(u"m/s")}
+const Speed{T} = Unitful.AbstractQuantity{T,Unitful.𝐋*Unitful.𝐓^-1,typeof(u"m/s")}
 const SpeedVector{T} = Vector{Speed{T}}
 
 const Angle{T} = Union{ Quantity{T, NoDims, typeof(u"°")}, Quantity{T, NoDims, typeof(u"rad")} }
+	
+to_angle(a::Real) = Angle(a * u"°")	
+to_angle(a::Angle) = a
+to_angle(::Nothing) = nothing
 
 """
     distance(a::Unitful.Acceleration, t::Unitful.Time, initial_v::Unitful.Velocity = 0u"m/s")
