@@ -2,17 +2,17 @@ module SfPhysics
 
 using Reexport
 
-include("geometry.jl")
-include("gravity.jl")
-include("blackhole.jl")
-
-@reexport using .SfGravity
-
 include("kinematics.jl")
 include("kinetics.jl")
 include("fluid-dynamics.jl")
 
 @reexport using .SfFluidDynamics
+
+include("geometry.jl")
+include("gravity.jl")
+include("blackhole.jl")
+
+@reexport using .SfGravity
 
 include("rocketry.jl")
 

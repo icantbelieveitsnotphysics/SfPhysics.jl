@@ -1,9 +1,14 @@
-﻿using Unitful
+﻿using Unitful, UnitfulAstro
 
 import PhysicalConstants.CODATA2018: g_n
 
 export distance, duration, acceleration, projectile_displacement, projectile_velocity, projectile_flight_time, 
-	projectile_peak_displacement, projectile_range, projectile_angle
+	projectile_peak_displacement, projectile_range, projectile_angle, projectile_angle_planetary
+	
+# TODO: rename these when the underlying compilation issues have been resolved
+export projectile_range_planetary
+# TODO: better names?
+export projectile_peak_displacement_planetary
 
 # making vectors of abstract unitful types like Unitful.Acceleration is a right pain, and this is much simpler
 const Accel{T} = Unitful.AbstractQuantity{T,Unitful.𝐋*Unitful.𝐓^-2,typeof(u"m/s/s")}
@@ -142,6 +147,39 @@ projectile_range(v_0::Unitful.Velocity, y_0::Unitful.Length, θ::Angle = 45u"°"
 	(v_0 * cos(θ) / g) * (v_0 * sin(θ) + sqrt((v_0 * sin(θ))^2 + 2g * y_0))
 	
 """
+    projectile_range_planetary(v_0::Unitful.Velocity, r_planet::Unitful.Length = 1u"Rearth", θ::Angle = 45u"°", g::Accel = g_n)
+	
+Compute range of a projectile launched from altitude `y_0` at angle `θ` with initial velocity `v_0` on a spherical planet with radius `r_planet` and surface gravity `g`.
+
+NOTE: this should be called `projectile_range`, but weird internal compiler errors prevent that with this version of Julia (1.5.3).
+"""
+function projectile_range_planetary(v_0::Unitful.Velocity, θ::Angle = 45u"°", r_planet::Unitful.Length = 1u"Rearth", g::Accel = g_n)
+	v_rat2 = (v_0 / sqrt(r_planet * g))^2
+	
+	if v_rat2 > 1
+		throw(DomainError("Initial velocity exceeds orbital velocity; Range undefined"))
+	end
+	
+	a = v_0^2 * sin(2θ) / g
+	b = sqrt(1 - (2 - v_rat2) * v_rat2 * cos(θ)^2)
+	
+	return a / b |> u"m"
+end
+
+function projectile_peak_displacement_planetary(v_0::Unitful.Velocity, θ::Angle = 45u"°", r_planet::Unitful.Length = 1u"Rearth", g::Accel = g_n)
+	v_rat2 = (v_0 / sqrt(r_planet * g))^2
+	
+	if v_rat2 > 1
+		throw(DomainError("Initial velocity exceeds orbital velocity; Range undefined"))
+	end
+	
+	a = v_0^2 * sin(θ) / g
+	b = 1 - v_rat2 + sqrt(1 - (2 - v_rat2) * v_rat2 * cos(θ)^2)
+	
+	return a / b |> u"m"
+end
+	
+"""
     projectile_angle(v_0::Unitful.Velocity, d::Unitful.Length, g::Accel = g_n)
 	
 Compute the possible launch angles for a projectile to reach a horizontal range of `d` given initial velocity `v_0` in a uniform gravitation acceleration `g`.
@@ -180,4 +218,17 @@ function projectile_angle(v_0::Unitful.Velocity, d::Unitful.Length, y::Unitful.L
 	else
 		return (b, a)
 	end
+end
+
+"""
+    projectile_optimum_angle(v_0::Unitful.Velocity, r_planet::Unitful.Length = 1u"Rearth", g::Accel = g_n)
+"""
+function projectile_optimum_angle(v_0::Unitful.Velocity, r_planet::Unitful.Length = 1u"Rearth", g::Accel = g_n)
+	v_rat2 = (v_0 / sqrt(r_planet * g))^2
+	
+	if v_rat2 > 0
+		throw(DomainError("Initial velocity exceeds orbital velocity; optimum angle undefined"))
+	end
+	
+	return 0.5acos(v_rat2 / (2 - v_rat2)) * u"rad" |> u"°"
 end
