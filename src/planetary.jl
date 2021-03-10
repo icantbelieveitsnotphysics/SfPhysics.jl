@@ -57,14 +57,15 @@ Rotation(moment_of_inertia::Union{Nothing, Real}, rotation_period::Unitful.Time,
 import ..SfGravity: gravity, planetary_mass, planetary_radius, orbital_period, orbital_radius, orbital_velocity, escape_velocity, 
 	hill_sphere, gravitational_binding_energy, roche_limit
 import ..SfRelativity: relativistic_kinetic_energy
-import ..SfPhysics: kinetic_energy, spherical_cap_solid_angle
-import ..SfMatter: density
+import ..SfPhysics: kinetic_energy
+import ..SfMatter: density, mass
+import ..SfGeometry: spherical_cap_solid_angle, volume, radius
 
 import PhysicalConstants.CODATA2018: σ, G, k_B # σ = Stefan-Boltzmann constant, k_B Boltzmann constant
 
 export gravity, planetary_mass, planetary_radius, orbital_period, orbital_radius, orbital_velocity, escape_velocity, hill_sphere,
 	relativistic_kinetic_energy, kinetic_energy, stellar_luminosity, stellar_irradiance, planetary_equilibrium_temperature,
-	jeans_escape_timescale, jeans_parameter, gravitational_binding_energy, roche_limit, volume, density
+	jeans_escape_timescale, jeans_parameter, gravitational_binding_energy, roche_limit, volume, density, radius
 
 """
 	gravity(body::Body)
@@ -104,7 +105,12 @@ roche_limit(primary::Body, satellite::Body) = roche_limit(primary.equatorial_rad
 
 volume(body::Body) = (4π * body.equatorial_radius^2 * body.polar_radius) / 3 |> u"km^3"
 
-density(body::Body) = body.mass / volume(body) |> u"kg/m^3"
+radius(body::Body) = body.equatorial_radius
+radius(orbit::Orbit) = orbit.semi_major_axis
+
+#density(body::Body) = body.mass / volume(body) |> u"kg/m^3"
+
+mass(body::Body) = body.mass
 	
 """
 	stellar_luminosity(r_star::Unitful.Length, t_surface::Unitful.Temperature)

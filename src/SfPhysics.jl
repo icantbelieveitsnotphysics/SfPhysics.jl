@@ -8,6 +8,9 @@ include("fluid-dynamics.jl")
 @reexport using .SfFluidDynamics
 
 include("geometry.jl")
+
+@reexport using .SfGeometry
+
 include("gravity.jl")
 include("blackhole.jl")
 

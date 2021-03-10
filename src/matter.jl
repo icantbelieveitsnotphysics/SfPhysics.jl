@@ -3,15 +3,21 @@ module SfMatter
 using Unitful
 
 import PhysicalConstants.CODATA2018: k_B
+import ..SfGeometry: volume
 
 export Material, density, yield_strength, maxwell_boltzmann_peak_speed
 
 struct Material
 	density::Unitful.Density
-	yield_strength::Union{Nothing, Unitful.Pressure}
+	yield_strength::Union{Missing, Unitful.Pressure}
 end
 
-Material(density::Unitful.Density) = Material(density, nothing)
+Material(density::Unitful.Density) = Material(density, missing)
+
+# empty definition for overriding
+mass(::Nothing) = nothing
+
+density(x) = mass(x) / volume(x) |> u"kg/m^3"
 
 density(m::Material) = m.density
 yield_strength(m::Material) = m.yield_strength
