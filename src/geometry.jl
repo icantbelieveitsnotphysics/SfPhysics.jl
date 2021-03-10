@@ -2,7 +2,7 @@ module SfGeometry
 
 using Unitful
 
-export Shape, Sphere, Cylinder
+export Shape, Sphere, Cylinder, Cube
 export volume, radius
 export sphere_volume, sphere_radius, cylinder_volume, cylinder_radius, cylinder_length, spherical_cap_solid_angle
 
@@ -24,8 +24,16 @@ struct Cylinder <: Shape
 	length::Unitful.Length
 end
 
+struct Cube <: Shape
+	length::Unitful.Length
+end
+
+Sphere(v::Unitful.Volume) = Sphere(sphere_radius(v))
+Cube(v::Unitful.Volume) = Cube(cbrt(v))
+
 volume(x::Sphere) = sphere_volume(x.radius)
 volume(x::Cylinder) = cylinder_volume(x.length, x.radius)
+volume(x::Cube) = x.length^3
 
 radius(x::Sphere) = x.radius
 radius(x::Cylinder) = x.radius

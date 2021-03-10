@@ -30,6 +30,12 @@ include("matter.jl")
 
 include("materials.jl")
 
+@reexport using .SfMaterials
+
+include("objects.jl")
+
+@reexport using .SfObjects
+
 include("planetary.jl")
 include("solar.jl")
 
