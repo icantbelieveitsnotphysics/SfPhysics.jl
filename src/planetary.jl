@@ -57,7 +57,8 @@ Rotation(moment_of_inertia::Union{Nothing, Real}, rotation_period::Unitful.Time,
 import ..SfGravity: gravity, planetary_mass, planetary_radius, orbital_period, orbital_radius, orbital_velocity, escape_velocity, 
 	hill_sphere, gravitational_binding_energy, roche_limit
 import ..SfRelativity: relativistic_kinetic_energy
-import ..SfPhysics: kinetic_energy, spherical_cap_solid_angle, density
+import ..SfPhysics: kinetic_energy, spherical_cap_solid_angle
+import ..SfMatter: density
 
 import PhysicalConstants.CODATA2018: σ, G, k_B # σ = Stefan-Boltzmann constant, k_B Boltzmann constant
 

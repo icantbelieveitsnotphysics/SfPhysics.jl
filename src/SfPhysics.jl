@@ -3,7 +3,6 @@ module SfPhysics
 using Reexport
 
 include("kinematics.jl")
-include("kinetics.jl")
 include("fluid-dynamics.jl")
 
 @reexport using .SfFluidDynamics
@@ -22,7 +21,12 @@ include("relativity.jl")
 
 @reexport using .SfRelativity
 
+include("matter.jl")
+
+@reexport using .SfMatter
+
 include("materials.jl")
+
 include("planetary.jl")
 include("solar.jl")
 

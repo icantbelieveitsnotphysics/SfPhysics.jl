@@ -2,8 +2,8 @@
 
 import PhysicalConstants.CODATA2018: g_n
 
-export distance, duration, acceleration, projectile_displacement, projectile_velocity, projectile_flight_time, 
-	projectile_peak_displacement, projectile_range, projectile_angle, projectile_angle_planetary
+export kinetic_energy, distance, duration, acceleration, projectile_displacement, projectile_velocity, 
+	projectile_flight_time, projectile_peak_displacement, projectile_range, projectile_angle, projectile_angle_planetary
 	
 # TODO: rename these when the underlying compilation issues have been resolved
 export projectile_range_planetary
@@ -21,6 +21,15 @@ const Angle{T} = Union{ Quantity{T, NoDims, typeof(u"°")}, Quantity{T, NoDims, 
 to_angle(a::Real) = Angle(a * u"°")	
 to_angle(a::Angle) = a
 to_angle(::Nothing) = nothing
+
+"""
+	kinetic_energy(m::Unitful.Mass, v::Unitful.Velocity)
+	
+Compute the kinetic energy of a body with mass `m` travelling at velocity `v`.
+
+No relativistic corrections are applied. Use `relativistic_kinetic_energy` if those are required.
+"""
+kinetic_energy(m::Unitful.Mass, v::Unitful.Velocity) = 0.5m*v^2 |> u"J"
 
 """
     distance(a::Unitful.Acceleration, t::Unitful.Time, initial_v::Unitful.Velocity = 0u"m/s")
