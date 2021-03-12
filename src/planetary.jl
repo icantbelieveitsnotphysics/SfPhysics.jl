@@ -5,12 +5,25 @@ using UnitfulAstro
 using UnitfulAngles
 
 export Body, Orbit, Rotation
+export satellites
 
 import ..SfPhysics: Angle, to_angle
 
 @derived_dimension ThermalFlux Unitful.𝐌*Unitful.𝐓^-3
 
 abstract type AbstractBody end
+
+const satellites_of = Dict{AbstractBody, Vector{AbstractBody}}()
+
+satellites(body::AbstractBody) = haskey(satellites_of, body) ? satellites_of [body] : Vector{AbstractBody}()
+
+function add_satellite(primary::AbstractBody, satellite::AbstractBody)
+	if !haskey(satellites_of, primary)
+		satellites_of[primary] = [ satellite ]
+	else
+		push!(satellites_of[primary], satellite)
+	end
+end
 
 struct Orbit
 	parent::AbstractBody
@@ -35,6 +48,16 @@ struct Body <: AbstractBody
 	bond_albedo::Union{Nothing, Real}
 	orbit::Union{Nothing, Orbit}
 	rotation::Union{Nothing, Rotation}
+	
+	function Body(name::String, mass::Unitful.Mass, equatorial_radius::Unitful.Length, polar_radius::Unitful.Length, bond_albedo::Union{Nothing, Real}, orbit::Union{Nothing, Orbit}, rotation::Union{Nothing, Rotation})
+		b = new(name, mass, equatorial_radius, polar_radius, bond_albedo, orbit, rotation)
+		
+		if orbit != nothing
+			add_satellite(orbit.parent, b)
+		end
+		
+		return b
+	end
 end
 
 Orbit(parent::AbstractBody, 
