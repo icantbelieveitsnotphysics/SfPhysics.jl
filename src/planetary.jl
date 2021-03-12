@@ -1,8 +1,7 @@
 module SfPlanetary
 
-using Unitful
-using UnitfulAstro
-using UnitfulAngles
+using Unitful, UnitfulAstro, UnitfulAngles
+using ..SfGeometry
 
 export Body, Orbit, Rotation
 export satellites
@@ -15,7 +14,7 @@ abstract type AbstractBody end
 
 const satellites_of = Dict{AbstractBody, Vector{AbstractBody}}()
 
-satellites(body::AbstractBody) = haskey(satellites_of, body) ? satellites_of [body] : Vector{AbstractBody}()
+satellites(body::AbstractBody) = haskey(satellites_of, body) ? satellites_of[body] : Vector{AbstractBody}()
 
 function add_satellite(primary::AbstractBody, satellite::AbstractBody)
 	if !haskey(satellites_of, primary)
@@ -43,14 +42,13 @@ end
 struct Body <: AbstractBody
 	name::String
 	mass::Unitful.Mass
-	equatorial_radius::Unitful.Length
-	polar_radius::Unitful.Length
+	shape::Shape
 	bond_albedo::Union{Nothing, Real}
 	orbit::Union{Nothing, Orbit}
 	rotation::Union{Nothing, Rotation}
 	
-	function Body(name::String, mass::Unitful.Mass, equatorial_radius::Unitful.Length, polar_radius::Unitful.Length, bond_albedo::Union{Nothing, Real}, orbit::Union{Nothing, Orbit}, rotation::Union{Nothing, Rotation})
-		b = new(name, mass, equatorial_radius, polar_radius, bond_albedo, orbit, rotation)
+	function Body(name::String, mass::Unitful.Mass, shape::Shape, bond_albedo::Union{Nothing, Real}, orbit::Union{Nothing, Orbit}, rotation::Union{Nothing, Rotation})
+		b = new(name, mass, shape, bond_albedo, orbit, rotation)
 		
 		if orbit != nothing
 			add_satellite(orbit.parent, b)
@@ -70,7 +68,7 @@ Orbit(parent::AbstractBody, semi_major_axis::Unitful.Length, eccentricity::Real,
 	Orbit(parent, semi_major_axis, eccentricity, to_angle(inclination), nothing, nothing)
 	
 Body(name::String, mass::Unitful.Mass, radius::Unitful.Length, bond_albedo::Union{Nothing, Real} = nothing) =
-	Body(name, mass, radius, radius, bond_albedo, nothing, nothing)
+	Body(name, mass, Sphere(radius), bond_albedo, nothing, nothing)
 	
 Rotation(moment_of_inertia::Union{Nothing, Real}, rotation_period::Unitful.Time, axial_tilt::Real) =
 	Rotation(moment_of_inertia, rotation_period, to_angle(axial_tilt))
@@ -128,7 +126,7 @@ roche_limit(primary::Body, satellite::Body) = roche_limit(primary.equatorial_rad
 
 volume(body::Body) = (4π * body.equatorial_radius^2 * body.polar_radius) / 3 |> u"km^3"
 
-radius(body::Body) = body.equatorial_radius
+radius(body::Body) = is_triaxial(body.shape) ? radius(body.shape) : equatorial_radius(body.shape)
 radius(orbit::Orbit) = orbit.semi_major_axis
 
 #density(body::Body) = body.mass / volume(body) |> u"kg/m^3"

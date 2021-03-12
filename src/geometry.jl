@@ -4,7 +4,8 @@ using Unitful
 
 export Shape, Ellipsoid, Spheroid, Sphere, Cylinder, Cuboid, Cube
 export volume, radius, area
-export sphere_volume, sphere_radius, cylinder_volume, cylinder_radius, cylinder_length, spherical_cap_solid_angle
+export sphere_volume, sphere_radius, cylinder_volume, cylinder_radius, cylinder_length, spherical_cap_solid_angle,
+	is_sphere, is_spheroid, is_triaxial, equatorial_radius, polar_radius
 
 sphere_volume(r::Unitful.Length) = (4π/3)r^3
 sphere_radius(v::Unitful.Volume) = cbrt(3v / 4π)
