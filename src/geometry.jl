@@ -2,8 +2,10 @@ module SfGeometry
 
 using Unitful
 
+import Base: length
+
 export Shape, Ellipsoid, Spheroid, Sphere, Cylinder, Cuboid, Cube
-export volume, radius, area
+export volume, radius, area, length
 export sphere_volume, sphere_radius, cylinder_volume, cylinder_radius, cylinder_length, spherical_cap_solid_angle,
 	is_sphere, is_spheroid, is_triaxial, equatorial_radius, polar_radius
 
@@ -49,13 +51,31 @@ volume(x::Ellipsoid) = (4π/3) * x.a * x.b * x.c
 volume(x::Cylinder) = cylinder_volume(x.length, x.radius)
 volume(x::Cuboid) = x.length * x.width * x.height
 
+"""
+    radius(x::Ellipsoid)
+	
+Returns the mean radius of `x`.
+"""
 radius(x::Ellipsoid) = (x.a + x.b + x.c) / 3
+
+"""
+    radius(x::Cylinder)
+	
+Returns the radius of `x`.
+"""
 radius(x::Cylinder) = x.radius
 
 is_sphere(x::Ellipsoid) = x.a == x.b && x.b == x.c
 is_spheroid(x::Ellipsoid) = x.a == x.b || x.a == x.c || x.b == x.c
 is_triaxial(x::Ellipsoid) = x.a != x.b && x.a != x.c && x.b != x.c
 
+"""
+    equatorial_radius(x::Ellipsoid)
+	
+Returns the equatorial radius of `x`, if `x` is spheroidal.
+
+An exception will be raised if `x` is a triaxial ellipsoid.
+"""
 function equatorial_radius(x::Ellipsoid)
 	if is_sphere(x)
 		return x.a
@@ -70,11 +90,18 @@ function equatorial_radius(x::Ellipsoid)
 	end
 end
 
+"""
+    polar_radius(x::Ellipsoid)
+	
+Returns the polar radius of `x`, if `x` is spheroidal.
+
+An exception will be raised if `x` is a triaxial ellipsoid.
+"""
 function polar_radius(x::Ellipsoid)
 	if is_sphere(x)
 		return x.a
 	elseif is_triaxial(x)
-		throw(ArgumentError("Triaxial ellipsoids do not have a defined polar radius"))
+		error("Triaxial ellipsoids do not have a defined polar radius")
 	else
 		if x.a == x.b
 			return x.c
@@ -86,6 +113,13 @@ function polar_radius(x::Ellipsoid)
 	end
 end
 
+"""
+    area(x::Ellipsoid)
+	
+Returns the surface area of `x`, if `x` is spheroidal.
+
+An exception will be raised if `x` is a triaxial ellipsoid.
+"""
 function area(x::Ellipsoid)
 	if is_sphere(x)
 		return 4π * x.a^2
@@ -103,13 +137,46 @@ function area(x::Ellipsoid)
 			return 2π * eq^2 * (1 + (po / (e * eq)) * asin(e))
 		end
 	else
-		throw(ArgumentError("Surface area of a triaxial ellipsoid not yet implemented"))
+		error("Surface area of a triaxial ellipsoid not yet implemented")
 	end
 end
 
+"""
+    area(x::Cuboid)
+	
+Returns the surface area of `x`.
+"""
 area(x::Cuboid) = 2 * (x.width * x.length) + 2 * (x.width * x.height) + 2 * (x.height * x.length)
 
+"""
+    area(x::Cylinder)
+	
+Returns the surface area of `x`, including endcaps.
+"""
 area(x::Cylinder) = 2π * x.radius * x.height + 2π * radius^2
+
+"""
+	length(x::Cuboid)
+	
+Return the length of the longest side of `x`.
+
+Note that this is not necessarily the same as `x.length`, as it is not enforced that `x.length` be `x`'s longest dimension.
+"""
+length(x::Cuboid) = max(x.length, x.width, x.height)
+
+"""
+    length(x::Cylinder)
+	
+Return the length of `x`.
+"""
+length(x::Cylinder) = x.length
+
+"""
+    length(x::Ellipsoid)
+
+Return the diameter of `x` along its longest axis.
+"""
+length(x::Ellipsoid) = max(x.a, x.b, x.c) * 2
 
 """
     spherical_cap_solid_angle(θ)
