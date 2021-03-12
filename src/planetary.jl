@@ -14,8 +14,18 @@ abstract type AbstractBody end
 
 const satellites_of = Dict{AbstractBody, Vector{AbstractBody}}()
 
+"""
+    satellites(body::AbstractBody)
+	
+Return a list of sattelites associated with `body`, which may be empty.
+"""
 satellites(body::AbstractBody) = haskey(satellites_of, body) ? satellites_of[body] : Vector{AbstractBody}()
 
+"""
+    add_satellite(primary::AbstractBody, satellite::AbstractBody)
+	
+Associate `satellite` with `primary`. Should not usually be called by user code.
+"""
 function add_satellite(primary::AbstractBody, satellite::AbstractBody)
 	if !haskey(satellites_of, primary)
 		satellites_of[primary] = [ satellite ]
@@ -80,7 +90,7 @@ import ..SfGravity: gravity, planetary_mass, planetary_radius, orbital_period, o
 import ..SfRelativity: relativistic_kinetic_energy
 import ..SfPhysics: kinetic_energy
 import ..SfMatter: density, mass
-import ..SfGeometry: spherical_cap_solid_angle, volume, radius
+import ..SfGeometry: spherical_cap_solid_angle, volume, radius, area
 
 import PhysicalConstants.CODATA2018: σ, G, k_B # σ = Stefan-Boltzmann constant, k_B Boltzmann constant
 
@@ -124,9 +134,22 @@ kinetic_energy(body::Body) = kinetic_energy(body.mass, body.orbit)
 
 roche_limit(primary::Body, satellite::Body) = roche_limit(primary.equatorial_radius, density(primary), density(satellite))
 
-volume(body::Body) = (4π * body.equatorial_radius^2 * body.polar_radius) / 3 |> u"km^3"
+volume(body::Body) = volume(body.shape) |> u"km^3"
 
+area(body::Body) = area(body.shape) |> u"km^2"
+
+"""
+    radius(body::Body)
+	
+Returns the equatorial radius of `body` when it is spheroidal, or its average radius if it is ellipsoidal.
+"""
 radius(body::Body) = is_triaxial(body.shape) ? radius(body.shape) : equatorial_radius(body.shape)
+
+"""
+    radius(orbit::Orbit)
+	
+Returns the semi-major axis of `orbit`.
+"""
 radius(orbit::Orbit) = orbit.semi_major_axis
 
 #density(body::Body) = body.mass / volume(body) |> u"kg/m^3"
