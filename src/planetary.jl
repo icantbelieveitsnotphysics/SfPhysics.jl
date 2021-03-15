@@ -167,17 +167,45 @@ orbital_radius(body::AbstractBody) = orbital_radius(body.orbit)
 orbital_velocity(orbit::Orbit) = orbital_velocity(orbit.semi_major_axis, orbital_period(orbit), orbit.eccentricity)
 orbital_velocity(body::AbstractBody) = orbital_velocity(body.orbit)
 
-escape_velocity(body::AbstractBody) = escape_velocity(body.mass, equatorial_radius(body))
+"""
+    escape_velocity(body::AbstractBody)
+	
+Calculate the escape velocity from the surface of `body`.
+
+If `body` is spheroidal, the escaping object is taken to be on its equator, otherwise the average radius of `body` is used.
+"""
+escape_velocity(body::AbstractBody) = escape_velocity(body.mass, radius(body))
+
+"""
+    escape_velocity(orbit::Orbit)
+	
+Calculate the escape velocity at the given `orbit`, based on the mass of the primary and the semimajor axis.
+"""
+escape_velocity(orbit::Orbit) = escape_velocity(orbit.parent.mass, orbit.semi_major_axis)
 
 hill_sphere(body::AbstractBody) = hill_sphere(body.orbit.parent.mass, body.mass, body.orbit.semi_major_axis, body.orbit.eccentricity)
 hill_sphere(orbit::Orbit, mass::Unitful.Mass) = hill_sphere(orbit.parent.mass, mass, orbit.semi_major_axis, orbit.eccentricity)
 
-gravitational_binding_energy(body::AbstractBody) = gravitational_binding_energy(body.mass, equatorial_radius(body))
+gravitational_binding_energy(body::AbstractBody) = gravitational_binding_energy(body.mass, radius(body))
 
 kinetic_energy(mass::Unitful.Mass, orbit::Orbit) = kinetic_energy(mass, orbital_velocity(orbit))
 kinetic_energy(body::AbstractBody) = kinetic_energy(body.mass, body.orbit)
 
+"""
+    roche_limit(primary::AbstractBody, satellite::AbstractBody)
+	
+Calculate the Roche limit of `satellite` as it approaches `primary`.
+"""
 roche_limit(primary::AbstractBody, satellite::AbstractBody) = roche_limit(equatorial_radius(primary), density(primary), density(satellite))
+
+"""
+    roche_limit(body::AbstractBody)
+	
+Calculate the Roche limit of `body` as it approache the object it orbits.
+
+If `body` does not orbit anything, an error will be raised.
+"""
+roche_limit(body::AbstractBody) = roche_limit(equatorial_radius(body.orbit.parent), density(body.orbit.parent), density(body))
 
 volume(body::AbstractBody) = volume(body.shape) |> u"km^3"
 
@@ -214,6 +242,11 @@ Returns the semi-major axis of `orbit`.
 """
 radius(orbit::Orbit) = orbit.semi_major_axis
 
+"""
+    mass(body::AbstractBody)
+	
+Return the mass of `body`.
+"""
 mass(body::AbstractBody) = body.mass
 	
 """
