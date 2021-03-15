@@ -6,7 +6,7 @@ using UnitfulAngles
 
 using ..SfPlanetary, ..SfGeometry
 	
-const sol = Body("Sol", 1u"Msun", 1u"Rsun")
+const sol = Star("Sol", 1u"Msun", 1u"Rsun", 5772u"K", 4.83, "G2V")
 
 const mercury = Body(
 			"Mercury", 3.3011u"kg" * big(10)^23, Sphere(2439.7u"km"), 0.088, 
