@@ -156,7 +156,7 @@ julia> gravity(SfSolarSystem.moon)
 ```"""
 gravity(body::AbstractBody) = gravity(body.mass, equatorial_radius(body))
 planetary_mass(body::AbstractBody) = body.mass
-planetary_radius(body::AbstractBody) = body.equatorial_radius
+planetary_radius(body::AbstractBody) = equatorial_radius(body)
 
 # kepler's third
 orbital_period(orbit::Orbit) = orbital_period(orbit.parent.mass, orbit.semi_major_axis)
@@ -167,17 +167,17 @@ orbital_radius(body::AbstractBody) = orbital_radius(body.orbit)
 orbital_velocity(orbit::Orbit) = orbital_velocity(orbit.semi_major_axis, orbital_period(orbit), orbit.eccentricity)
 orbital_velocity(body::AbstractBody) = orbital_velocity(body.orbit)
 
-escape_velocity(body::AbstractBody) = escape_velocity(body.mass, body.equatorial_radius)
+escape_velocity(body::AbstractBody) = escape_velocity(body.mass, equatorial_radius(body))
 
 hill_sphere(body::AbstractBody) = hill_sphere(body.orbit.parent.mass, body.mass, body.orbit.semi_major_axis, body.orbit.eccentricity)
 hill_sphere(orbit::Orbit, mass::Unitful.Mass) = hill_sphere(orbit.parent.mass, mass, orbit.semi_major_axis, orbit.eccentricity)
 
-gravitational_binding_energy(body::AbstractBody) = gravitational_binding_energy(body.mass, body.equatorial_radius)
+gravitational_binding_energy(body::AbstractBody) = gravitational_binding_energy(body.mass, equatorial_radius(body))
 
 kinetic_energy(mass::Unitful.Mass, orbit::Orbit) = kinetic_energy(mass, orbital_velocity(orbit))
 kinetic_energy(body::AbstractBody) = kinetic_energy(body.mass, body.orbit)
 
-roche_limit(primary::AbstractBody, satellite::AbstractBody) = roche_limit(primary.equatorial_radius, density(primary), density(satellite))
+roche_limit(primary::AbstractBody, satellite::AbstractBody) = roche_limit(equatorial_radius(primary), density(primary), density(satellite))
 
 volume(body::AbstractBody) = volume(body.shape) |> u"km^3"
 
