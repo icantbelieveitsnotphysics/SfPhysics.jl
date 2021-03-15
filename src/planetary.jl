@@ -134,13 +134,14 @@ import ..SfGravity: gravity, planetary_mass, planetary_radius, orbital_period, o
 import ..SfRelativity: relativistic_kinetic_energy
 import ..SfPhysics: kinetic_energy
 import ..SfMatter: density, mass
-import ..SfGeometry: spherical_cap_solid_angle, volume, radius, equatorial_radius, area
+import ..SfGeometry: spherical_cap_solid_angle, volume, radius, equatorial_radius, polar_radius, area, cross_sectional_area
 
 import PhysicalConstants.CODATA2018: σ, G, k_B # σ = Stefan-Boltzmann constant, k_B Boltzmann constant
 
-export gravity, planetary_mass, planetary_radius, orbital_period, orbital_radius, orbital_velocity, escape_velocity, hill_sphere,
+export gravity, orbital_period, orbital_radius, orbital_velocity, escape_velocity, hill_sphere,
 	relativistic_kinetic_energy, kinetic_energy, stellar_luminosity, stellar_irradiance, planetary_equilibrium_temperature,
-	jeans_escape_timescale, jeans_parameter, gravitational_binding_energy, roche_limit, volume, density, radius, equatorial_radius
+	jeans_escape_timescale, jeans_parameter, gravitational_binding_energy, roche_limit, volume, density, radius, equatorial_radius,
+	area, cross_sectional_area
 
 """
 	gravity(body::AbstractBody)
@@ -182,6 +183,8 @@ volume(body::AbstractBody) = volume(body.shape) |> u"km^3"
 
 area(body::AbstractBody) = area(body.shape) |> u"km^2"
 
+cross_sectional_area(body::AbstractBody) = cross_sectional_area(body.shape) |> u"km^2"
+
 """
     radius(body::AbstractBody)
 	
@@ -196,6 +199,14 @@ Returns the equatorial radius of `body` when it is spheroidal, or an error for b
 """
 equatorial_radius(body::AbstractBody) = equatorial_radius(body.shape)
 
+
+"""
+    polar_radius(body::AbstractBody)
+	
+Returns the polar radius of `body` when it is spheroidal, or an error for bodies without a well defined polar radius.
+"""
+polar_radius(body::AbstractBody) = polar_radius(body.shape)
+
 """
     radius(orbit::Orbit)
 	
@@ -206,18 +217,20 @@ radius(orbit::Orbit) = orbit.semi_major_axis
 mass(body::AbstractBody) = body.mass
 	
 """
-	stellar_luminosity(r_star::Unitful.Length, t_surface::Unitful.Temperature)
+	stellar_luminosity(r_star::Unitful.Length, t_surface::Unitful.Temperature, r_star_p = r_star)
 	
 Approximate the luminosity of a star with radius `r_star` and surface temperature `t_surface`.
+
+Optionally, a polar radius may be given, otherwise the star is assumed to have a circular cross-section.
 """
-stellar_luminosity(r_star::Unitful.Length, t_surface::Unitful.Temperature) = 4π * r_star^2 * σ * t_surface^4 |>u"W"
+stellar_luminosity(r_star::Unitful.Length, t_surface::Unitful.Temperature, r_star_p = r_star) = 4π * r_star * r_star_p * σ * t_surface^4 |>u"W"
 
 """
     stellar_luminosity(star::Star)
 	
 Approximate the luminosity of the given `star`.
 """
-stellar_luminosity(star::Star) = stellar_luminosity(radius(star), star.surface_temperature)
+stellar_luminosity(star::Star) = stellar_luminosity(equatorial_radius(star), star.surface_temperature, polar_radius(star))
 	
 """
 	stellar_irradiance = function(l_stellar::Unitful.Power, r_orbit::Unitful.Length, r_body::Unitful.Length)
@@ -230,34 +243,54 @@ function stellar_irradiance(l_stellar::Unitful.Power, r_orbit::Unitful.Length, r
 end
 
 """
-	stellar_irradiance(star::Star, body::AbstractBody)
+	stellar_irradiance(body::AbstractBody)
 	
-Approximate the irradiance delivered by `star` to `body`.
+Approximate the irradiance delivered to `body` by the star it ultimately orbits.
 
-If `body` does not directly orbit `star`, this function will recursively ascend its tree of parents until the star is found, 
-or it is discovered not to belong to `star`'s system which will raise an error. The distance from `star` to the topmost parent
-is used to compute the irradiance, as a proxy for average orbital distance.
+This function will recursively ascend its tree of parent bodies until a star is found. If the ultimate parent is not
+a star, an error will be raised. The distance from `star` to the topmost parent is used to compute the irradiance, 
+as a proxy for average orbital distance.
 
-This method will deadlock if used on a binary system at present.
+This method will deadlock if used on a binary or multiple system at present.
 """
-function stellar_irradiance(star::Star, body::AbstractBody)
+function stellar_irradiance(body::AbstractBody)
 	orbit = body.orbit
 	
-	while orbit.parent != star
+	while typeof(orbit.parent) != Star
 		orbit = orbit.parent.orbit
 		
 		if orbit == nothing
-			error("Body does not ultimately orbit given star")
+			error("Body does not ultimately orbit a star")
 		end
 	end
 	
-	return stellar_irradiance(stellar_luminosity(star), orbit.semi_major_axis, radius(body))
+	return stellar_irradiance(stellar_luminosity(orbit.parent), orbit.semi_major_axis, radius(body))
 end
 
+"""
+    planetary_equilibrium_temperature(irradiance::ThermalFlux, bond_albedo::Real)
+	
+Compute the equilibrium temperature for a body with `bond_albedo` subject to stellar `irradiance`.
+"""
 planetary_equilibrium_temperature(irradiance::ThermalFlux, bond_albedo::Real) = ((irradiance * (1 - bond_albedo)) / 4σ)^.25 |> u"K"
 
+"""
+    planetary_equilibrium_temperature(l_stellar::Unitful.Power, r_orbit::Unitful.Length, r_body::Unitful.Length, bond_albedo::Real)
+	
+Approximate the planetary equilibrium temperature of a body of radius `r_body` and `bond_albedo`, orbiting a star of luminosity `l_stellar` at a distance of `r_orbit`.
+"""
 planetary_equilibrium_temperature(l_stellar::Unitful.Power, r_orbit::Unitful.Length, r_body::Unitful.Length, bond_albedo::Real) =
-	planetary_equilibrium_temperature(solar_irradiance(s_l, r_orbit, r_body) / (π * r_body^2), bond_albedo) |> u"K"
+	planetary_equilibrium_temperature(stellar_irradiance(s_l, r_orbit, r_body) / (π * r_body^2), bond_albedo) |> u"K"
+
+"""
+    planetary_equilibrium_temperature(body::Body)
+	
+Approximate the planetary equilibrium temperature of `body`, using the irradiance of the star it ultimately orbits.
+
+If the body does not ultimately orbit a star, an error will be raised. Binary and multiple star systems will result in deadlocks.
+"""
+planetary_equilibrium_temperature(body::Body) = 
+	planetary_equilibrium_temperature(stellar_irradiance(body) / cross_sectional_area(body), body.bond_albedo) |> u"K"
 	
 # temperature, exosphere altiutude, planetary mass, planetary radius, gas molecular mass
 # http://cococubed.asu.edu/code_pages/jeans_escape.shtml
@@ -271,9 +304,15 @@ function jeans_escape_timescale(T::Unitful.Temperature, h::Unitful.Length, M::Un
    return H/v_jeans |> u"yr"
 end
 
+jeans_escape_timescale(T::Unitful.Temperature, h::Unitful.Length, body::AbstractBody, m::Unitful.Mass) = 
+	jeans_escape_timescale(T, h, mass(body), radius(body), m)
+
 # https://arxiv.org/ftp/arxiv/papers/1009/1009.5110.pdf
 # https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2008GL036513
 jeans_parameter(m_planet::Unitful.Mass, m_molecule::Unitful.Mass, t_exosphere::Unitful.Temperature, r_exosphere::Unitful.Length) = 
 	(G * m_planet * m_molecule) / (k_B * t_exosphere * r_exosphere) |> u"m/m"
 
+jeans_parameter(body::AbstractBody, m_molecule::Unitful.Mass, t_exosphere::Unitful.Temperature, r_exosphere::Unitful.Length) = 
+	jeans_parameter(mass(body), m_molecule, t_exosphere, r_exosphere)
+	
 end

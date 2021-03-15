@@ -7,7 +7,7 @@ import Base: length
 export Shape, Ellipsoid, Spheroid, Sphere, Cylinder, Cuboid, Cube
 export volume, radius, area, length
 export sphere_volume, sphere_radius, cylinder_volume, cylinder_radius, cylinder_length, spherical_cap_solid_angle,
-	is_sphere, is_spheroid, is_triaxial, equatorial_radius, polar_radius
+	is_sphere, is_spheroid, is_triaxial, equatorial_radius, polar_radius, cross_sectional_area
 
 sphere_volume(r::Unitful.Length) = (4π/3)r^3
 sphere_radius(v::Unitful.Volume) = cbrt(3v / 4π)
@@ -177,6 +177,21 @@ length(x::Cylinder) = x.length
 Return the diameter of `x` along its longest axis.
 """
 length(x::Ellipsoid) = max(x.a, x.b, x.c) * 2
+
+"""
+    cross_sectional_area(x::Ellipsoid)
+	
+For spheres and spheroids, return the cross sectional area of `x` in the coronal plane.
+
+Will return an error for triaxial ellipsoids.
+"""
+function cross_sectional_area(x::Ellipsoid)
+	if is_triaxial(x)
+		error("Cross section not well defined for triaxial ellipsoids")
+	else
+		return equatorial_radius(x) * polar_radius(x) * π
+	end
+end
 
 """
     spherical_cap_solid_angle(θ)
