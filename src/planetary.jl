@@ -130,7 +130,7 @@ Rotation(moment_of_inertia::Union{Nothing, Real}, rotation_period::Unitful.Time,
 #####################################################################################
 
 import ..SfGravity: gravity, planetary_mass, planetary_radius, orbital_period, orbital_radius, orbital_velocity, escape_velocity, 
-	hill_sphere, gravitational_binding_energy, roche_limit
+	hill_sphere, gravitational_binding_energy, roche_limit, barycentric_distance
 import ..SfRelativity: relativistic_kinetic_energy
 import ..SfPhysics: kinetic_energy
 import ..SfMatter: density, mass
@@ -183,12 +183,53 @@ Calculate the escape velocity at the given `orbit`, based on the mass of the pri
 """
 escape_velocity(orbit::Orbit) = escape_velocity(orbit.parent.mass, orbit.semi_major_axis)
 
+"""
+    hill_sphere(body::AbstractBody)
+	
+Calculate the radius of the Hill sphere of `body`, using its current orbit and parent.
+"""
 hill_sphere(body::AbstractBody) = hill_sphere(body.orbit.parent.mass, body.mass, body.orbit.semi_major_axis, body.orbit.eccentricity)
+
+"""
+    hill_sphere(orbit::Orbit, mass::Unitful.Mass)
+	
+Calculate the radius of the Hill sphere of a body of `mass` in `orbit`, using the parent body described by that orbit.
+"""
 hill_sphere(orbit::Orbit, mass::Unitful.Mass) = hill_sphere(orbit.parent.mass, mass, orbit.semi_major_axis, orbit.eccentricity)
 
+"""
+    hill_sphere(parent::AbstractBody, satellite::AbstractBody, sma::Unitful.Length, ecc::Real = 1)
+	
+Calculate the radius of the Hill sphere of `satellite` as if it were orbiting `parent` with a semi-major axis of `sma` and eccentricity `ecc`.
+"""
+hill_sphere(parent::AbstractBody, satellite::AbstractBody, sma::Unitful.Length, ecc::Real = 1) = hill_sphere(mass(parent), mass(satellite), sma, ecc)
+
+"""
+    hill_sphere(parent::AbstractBody, satellite::AbstractBody, orbit::Orbit)
+	
+Calculate the radius of the Hill sphere of `satellite` as if it were orbiting `parent` in orbit `orbit`.
+"""
+hill_sphere(parent::AbstractBody, satellite::AbstractBody, orbit::Orbit) = hill_sphere(mass(parent), mass(satellite), orbit.semi_major_axis, orbit.eccentricity)
+
+"""
+    gravitational_binding_energy(body::AbstractBody)
+	
+Calculate the gravitational binding energy of `body`.	
+"""
 gravitational_binding_energy(body::AbstractBody) = gravitational_binding_energy(body.mass, radius(body))
 
+"""
+    kinetic_energy(mass::Unitful.Mass, orbit::Orbit)
+	
+Compute the average kinetic energy of a body of mass `mass` in orbit `orbit`.
+"""
 kinetic_energy(mass::Unitful.Mass, orbit::Orbit) = kinetic_energy(mass, orbital_velocity(orbit))
+
+"""
+    kinetic_energy(body::AbstractBody)
+	
+Compute the average kinetic energy of `body` in its current orbit.
+"""
 kinetic_energy(body::AbstractBody) = kinetic_energy(body.mass, body.orbit)
 
 """
@@ -207,10 +248,38 @@ If `body` does not orbit anything, an error will be raised.
 """
 roche_limit(body::AbstractBody) = roche_limit(equatorial_radius(body.orbit.parent), density(body.orbit.parent), density(body))
 
+"""
+    barycentric_distance(body::AbstractBody)
+	
+Find the offset from the barycentre of `body` and its parent to the centre of the parent.
+
+If `body` does not orbit anything, an error will be raised.
+"""
+barycentric_distance(body::AbstractBody) = barycentric_distance(mass(body), mass(body.orbit.parent), orbital_radius(body))
+
+"""
+    volume(body::AbstractBody)
+	
+Calculate the volume of `body`.
+"""
 volume(body::AbstractBody) = volume(body.shape) |> u"km^3"
 
+"""
+    area(body::AbstractBody)
+	
+Calculate the surface area of `body`.
+
+Some shapes, such as triaxial ellipsoids, may not be supported yet.
+"""
 area(body::AbstractBody) = area(body.shape) |> u"km^2"
 
+"""
+    cross_sectional_area(body::AbstractBody)
+	
+Calculate the approximate cross sectional area of `body`, where possible.
+
+Results are well defined for spherical and spheroidal bodies, but may throw an error for other shapes such as triaxial ellipsoids.
+"""
 cross_sectional_area(body::AbstractBody) = cross_sectional_area(body.shape) |> u"km^2"
 
 """
@@ -226,7 +295,6 @@ radius(body::AbstractBody) = is_triaxial(body.shape) ? radius(body.shape) : equa
 Returns the equatorial radius of `body` when it is spheroidal, or an error for bodies without a well defined equatorial radius.
 """
 equatorial_radius(body::AbstractBody) = equatorial_radius(body.shape)
-
 
 """
     polar_radius(body::AbstractBody)
