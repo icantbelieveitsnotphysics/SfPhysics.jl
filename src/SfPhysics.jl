@@ -2,6 +2,10 @@ module SfPhysics
 
 using Reexport
 
+include("units.jl")
+
+@reexport using .SfUnits
+
 include("kinematics.jl")
 include("fluid-dynamics.jl")
 
