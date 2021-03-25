@@ -5,7 +5,8 @@ using Unitful, UnitfulAstro
 
 export vis_viva, gravity, planetary_mass, planetary_radius, escape_velocity, hill_sphere,
 	orbital_velocity, orbital_period, gravitational_binding_energy, roche_limit, gravity_tug_mass,
-	barycentric_distance, radial_orbit_time, radial_orbit_displacement
+	barycentric_distance, tidal_acceleration,
+	radial_orbit_time, radial_orbit_displacement
 
 function vis_viva(parent_mass::Unitful.Mass, semimajor_axis::Unitful.Length, current_radius::Unitful.Length)
 	G*parent_mass*(2/current_radius - 1/semimajor_axis) |> u"m^2/s^2"
@@ -168,6 +169,15 @@ gravity_tug_mass(force::Unitful.Force, separation::Unitful.Length, body_mass::Un
 Compute the distance from the barycenter of `m_1` to the barycenter of the `m_1`-`m_2` system, where the masses have an average separation of `a`.
 """
 barycentric_distance(m1::Unitful.Mass, m2::Unitful.Mass, a::Unitful.Length) = (a * m2) / (m1 + m2) |> u"km"
+
+"""
+    tidal_acceleration(body_radius::Unitful.Length, parent_mass::Unitful.Mass, separation::Unitful.Length)
+	
+Approximate tidal acceleration felt by a body of radius `body_radius` at a distance of `separation` from a body of mass `parent_mass`.
+
+Changes in tidal acceleration are associated with effects like heating, etc.
+"""
+tidal_acceleration(body_radius::Unitful.Length, parent_mass::Unitful.Mass, separation::Unitful.Length) = 2body_radius * G * parent_mass / separation^3
 
 function radial_orbit_time(m1::Unitful.Mass, m2::Unitful.Mass, x0::Unitful.Length, v0::Unitful.Velocity, x::Unitful.Length)
 	μ = G * (m1 + m2)
