@@ -49,11 +49,36 @@ const jupiter = Body(
 			"Jupiter", 1u"Mjup", Spheroid(1u"Rjup_e", 1u"Rjup_p"), 0.503,
 			Orbit(sol, 5.2044u"AU", 0.0489, 6.09, 100.464, 273.867),
 			Rotation(0.2756, 9.925u"hr", 3.13)) # tilt to orbit
+			
+const io = Body(
+			"Io", 8.931938e22u"kg", Sphere(18621.6u"km"), 0.63,
+			Orbit(jupiter, 421700u"km", 0.0041, 0.05, nothing, nothing), # not quite an elliptical orbit; has resonance issues
+			Rotation(0.37824, 1.769137786u"d", 0))
+
+const europa = Body(
+			"Europa", 4.799844e22u"kg", Sphere(1560.8u"km"), 0.67,
+			Orbit(jupiter, 670900u"km", 0.009, 0.47, nothing, nothing), # not quite an elliptical orbit
+			Rotation(0.346, 3.551181u"d", 0.1))
+
+const ganymede = Body(
+			"Ganymede", 1.4819e23u"kg", Sphere(2634.1u"km"), 0.43,
+			Orbit(jupiter, 1070400u"km", 0.0013, 0.2, nothing, nothing), # this one is elliptical
+			Rotation(0.3115, 7.15455296u"d", 0.33)),
+
+const callisto = Body(
+			"Callisto", 1.075938e23u"kg", Sphere(2410.3u"km"), 0.22, # geometric albedo
+			Orbit(jupiter, 1882700u"km", 0.0074, 0.192, nothing, nothing), # also actually elliptical
+			Rotation(0.3549, 16.6890184u"d", 0))
 
 const saturn = Body(
 			"Saturn", 5.6834u"kg" * big(10)^26, Spheroid(60268u"km", 54364u"km"), 0.342,
 			Orbit(sol, 9.5826u"AU", 0.0565, 5.51, 113.665, 339.392),
 			Rotation(0.22, 38018u"s", 26.73)) # tilt to orbit)
+			
+const titan = Body(
+			"Titan", 1.3452e23u"kg", Sphere(2574.73u"km"), 0.22,
+			Orbit(saturn, 1221870u"km", 0.0288, 0.34854, nothing, nothing),# inclination to Saturn's equator
+			Rotation(0.3414, 15.945u"d", 0))
 
 const uranus = Body(
 			"Uranus", 8.681u"kg" * big(10)^25, Spheroid(25559u"km", 24973u"km"), 0.3,
