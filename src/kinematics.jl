@@ -2,6 +2,8 @@
 
 import PhysicalConstants.CODATA2018: g_n
 
+import ..SfUnits: Angle, to_angle
+
 export kinetic_energy, distance, duration, acceleration, projectile_displacement, projectile_velocity, 
 	projectile_flight_time, projectile_peak_displacement, projectile_range, projectile_angle, projectile_angle_planetary
 	
@@ -10,17 +12,8 @@ export projectile_range_planetary
 # TODO: better names?
 export projectile_peak_displacement_planetary
 
-# making vectors of abstract unitful types like Unitful.Acceleration is a right pain, and this is much simpler
-const Accel{T} = Unitful.AbstractQuantity{T,Unitful.𝐋*Unitful.𝐓^-2,typeof(u"m/s/s")}
-const AccelerationVector{T} = Vector{Accel{T}}
-const Speed{T} = Unitful.AbstractQuantity{T,Unitful.𝐋*Unitful.𝐓^-1,typeof(u"m/s")}
-const SpeedVector{T} = Vector{Speed{T}}
-
-const Angle{T} = Union{ Quantity{T, NoDims, typeof(u"°")}, Quantity{T, NoDims, typeof(u"rad")} }
-	
-to_angle(a::Real) = Angle(a * u"°")	
-to_angle(a::Angle) = a
-to_angle(::Nothing) = nothing
+const Accel{T, U} = Unitful.AbstractQuantity{T,Unitful.𝐋*Unitful.𝐓^-2, U}
+const Speed{T, U} = Unitful.AbstractQuantity{T,Unitful.𝐋*Unitful.𝐓^-1, U}
 
 """
 	kinetic_energy(m::Unitful.Mass, v::Unitful.Velocity)

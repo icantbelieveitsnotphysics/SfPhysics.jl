@@ -2,7 +2,7 @@ module SfAstronomy
 
 using Unitful, UnitfulAstro
 
-import ..SfPhysics: Angle, to_angle
+import ..SfUnits: Angle, to_angle
 
 export absolute_magnitude, apparent_magnitude, diffuse_disc_q, diffuse_sphere_q
 

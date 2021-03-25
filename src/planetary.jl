@@ -6,7 +6,7 @@ using ..SfGeometry
 export Body, Orbit, Rotation, Star
 export satellites
 
-import ..SfPhysics: Angle, to_angle
+import ..SfUnits: Angle, to_angle
 
 @derived_dimension ThermalFlux Unitful.𝐌*Unitful.𝐓^-3
 
