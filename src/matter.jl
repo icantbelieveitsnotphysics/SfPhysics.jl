@@ -26,6 +26,10 @@ yield_strength(m::Material) = m.yield_strength
     maxwell_boltzmann_peak_speed(m::Unitful.Mass, T::Unitful.Temperature)
 	
 Compute the velocity at the peak of the Maxwell-Boltzmann speed distribution for a gas with molecular mass `m` and temperature `T`.
+
+``\\sqrt{\\frac{2k_BT}{m}}``
+
+where ``k_B`` is the Boltzmann constant.
 """
 maxwell_boltzmann_peak_speed(m::Unitful.Mass, T::Unitful.Temperature) = sqrt((2k_B*T)/m) |> u"m/s"
 
