@@ -6,8 +6,13 @@ import Base: length
 
 export Shape, Ellipsoid, Spheroid, Sphere, Cylinder, Cuboid, Cube
 export volume, radius, area, length
-export sphere_volume, sphere_radius, cylinder_volume, cylinder_radius, cylinder_length, spherical_cap_solid_angle,
-	is_sphere, is_spheroid, is_triaxial, equatorial_radius, polar_radius, cross_sectional_area
+export unit_x, unit_y, unit_z, sphere_volume, sphere_radius, cylinder_volume, cylinder_radius, cylinder_length, 
+	spherical_cap_solid_angle, is_sphere, is_spheroid, is_triaxial, equatorial_radius, polar_radius, 
+	cross_sectional_area
+	
+const unit_x = [1, 0, 0]
+const unit_y = [0, 1, 0]
+const unit_z = [0, 0, 1]
 
 sphere_volume(r::Unitful.Length) = (4π/3)r^3
 sphere_radius(v::Unitful.Volume) = cbrt(3v / 4π)
