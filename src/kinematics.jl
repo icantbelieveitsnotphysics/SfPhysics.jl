@@ -12,9 +12,6 @@ export projectile_range_planetary
 # TODO: better names?
 export projectile_peak_displacement_planetary
 
-const Accel{T, U} = Unitful.AbstractQuantity{T,Unitful.𝐋*Unitful.𝐓^-2, U}
-const Speed{T, U} = Unitful.AbstractQuantity{T,Unitful.𝐋*Unitful.𝐓^-1, U}
-
 """
 	kinetic_energy(m::Unitful.Mass, v::Unitful.Velocity)
 	
