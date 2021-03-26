@@ -1,10 +1,14 @@
 using SfPhysics
 using Test
 
-using Unitful, UnitfulAstro
+using Unitful, UnitfulAstro, Documenter
 import PhysicalConstants.CODATA2018: g_n, c_0
 
 @testset "SfPhysics.jl" begin
+	@testset "Documentation" begin
+		doctest(SfPhysics; manual=false)
+	end
+
     @testset "SfGravity" begin
 		# for reasons I'm too lazy to establish, there's a bit of a margin of error here. pretty small though.
 		@test gravity(1u"Mearth", 1u"Rearth") ≈ g_n atol = 0.01u"m/s^2"
