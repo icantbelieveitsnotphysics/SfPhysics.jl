@@ -1,13 +1,24 @@
 module SfGravity
 
 using PhysicalConstants.CODATA2018: c_0, g_n, G, StefanBoltzmannConstant, ħ, k_B
-using Unitful, UnitfulAstro
+using Unitful, UnitfulAstro, Documenter
 
 export vis_viva, gravity, planetary_mass, planetary_radius, escape_velocity, hill_sphere,
 	orbital_velocity, orbital_period, gravitational_binding_energy, roche_limit, gravity_tug_mass,
 	barycentric_distance, tidal_acceleration,
 	radial_orbit_time, radial_orbit_displacement
+	
+DocMeta.setdocmeta!(SfGravity, :DocTestSetup, :(using Unitful, UnitfulAstro, ..SfGravity); recursive=true)
 
+"""
+    function vis_viva(parent_mass::Unitful.Mass, semimajor_axis::Unitful.Length, current_radius::Unitful.Length)
+	
+Return the square of the relative velocities of a body with negligible mass and orbit with `semimajor_axis` and `current_radius` from a central body of `parent_mass`.
+
+``v^2 = GM\\left( \\frac{2}{r} - \\frac{1}{a} \\right)``
+
+where ``G`` is the gravitational constant, ``M`` is the mass of the central body, ``r`` is the current separation of the bodies and ``a`` is the semi-major axis of the orbit.
+"""
 function vis_viva(parent_mass::Unitful.Mass, semimajor_axis::Unitful.Length, current_radius::Unitful.Length)
 	G*parent_mass*(2/current_radius - 1/semimajor_axis) |> u"m^2/s^2"
 end
@@ -18,9 +29,9 @@ end
 Calculate acceleration due to gravity at distance `r` from point mass `m`
 
 # Example
-```julia-repl
+```jldoctest
 julia> gravity(1u"Mearth", 1u"Rearth")
-9.798075156340099 m s^-2
+9.798398133669465 m s^-2
 ```"""
 gravity(m::Unitful.Mass, r::Unitful.Length) = G * m / r^2 |> u"m/s/s"
 	
@@ -30,9 +41,9 @@ gravity(m::Unitful.Mass, r::Unitful.Length) = G * m / r^2 |> u"m/s/s"
 Calculate the strength of gravity at a distance `r` between two masses, `m1` and `m2`.
 
 # Example
-```julia-repl
+```jldoctest
 julia> gravity(1u"Mearth", 100u"kg", 1u"Rearth")
-979.8075156340099 N
+979.8398133669466 N
 ```"""
 gravity(m1::Unitful.Mass, m2::Unitful.Mass, r::Unitful.Length) = G * m1 * m2 / r^2 |> u"N"
 	
@@ -56,6 +67,8 @@ planetary_radius(m::Unitful.Mass, acc::Unitful.Acceleration) = sqrt((G * m) / ac
 	orbital_period(m::Unitful.Mass, r::Unitful.Length)
 	
 Calculate the period of an orbit with semimajor axis `r` about a body with mass `m`.
+
+``P = \\sqrt{\\frac{4π^2r^3}{Gm}}``
 """
 orbital_period(m::Unitful.Mass, r::Unitful.Length) = sqrt((4π^2 * r^3) / (G * m)) |> u"s"
 	
@@ -63,6 +76,8 @@ orbital_period(m::Unitful.Mass, r::Unitful.Length) = sqrt((4π^2 * r^3) / (G * m
 	orbital_radius(m::Unitful.Mass, t::Unitful.Time)
 	
 Calculate the semimajor axis of an orbit with period `t` about a body with mass `m`.
+
+``a = \\sqrt[3]{\\frac{t^2Gm}{4π^2}}``
 """
 orbital_radius(m::Unitful.Mass, t::Unitful.Time) = cbrt((t^2 * G * m)/(4π^2)) |> u"m"
 
@@ -86,6 +101,8 @@ orbital_velocity(sma::Unitful.Length, t::Unitful.Time) = 2π * sma / t |> u"km/s
     orbital_velocity(sma::Unitful.Length, t::Unitful.Time, e)
 	
 Approximate the average orbital velocity of a orbit with eccentricity `e` and period `t`.
+
+``s_o = \\frac{2πa}{t} \\left( 1 - \\frac{e^2}{4} - \\frac{3e^4}{64} - \\frac{5e^6}{256} - \\frac{175e^8}{16384} \\right)``
 """
 function orbital_velocity(sma::Unitful.Length, t::Unitful.Time, e)
 	(2π * sma / t) * (1 - e^2 / 4 - 3e^4 / 64 - 5e^6 / 256 - 175e^8 / 16384) |> u"km/s"
@@ -109,6 +126,10 @@ orbital_velocity(parent_mass::Unitful.Mass, radius::Unitful.Length) = sqrt(G * p
 	planetary_mass(orbital_radius::Unitful.Length, orbital_period::Unitful.Time)
 	
 Calculate the mass of a body orbited by a satellite with semimajor axis `sma` and period `orbital_period`.
+
+``M_p = \\frac{4π^2a^3}{GT^2}``
+
+where ``a`` is the semi-major axis and ``T`` is the orbital period.
 """
 planetary_mass(sma::Unitful.Length, orbital_period::Unitful.Time) = (4π^2 * sma^3) / (G * orbital_period^2) |> u"kg"
 
@@ -137,6 +158,10 @@ planetary_radius(m::Unitful.Mass, v_esc::Unitful.Velocity) = 2G * m / v_esc^2 |>
 	hill_sphere(m_parent::Unitful.Mass, m::Unitful.Mass, sma::Unitful.Length, e = 0)
 	
 Calculate the approximate Hill sphere radius at periapse of a body of mass `m` that orbits a body of mass `m_parent` at a distance of `sma` with orbital eccentricity `e`.
+
+``h_r = a(1-e)\\sqrt[3]{\\frac{m}{3M}}``
+
+where ``a`` is the semi-major axis, `m` is the mass of the smaller body and ``M`` is the mass of the central body.
 """
 function hill_sphere(m_parent::Unitful.Mass, m::Unitful.Mass, sma::Unitful.Length, e = 0)
 	sma * (1-e) * cbrt(m / 3m_parent) |> Unitful.unit(sma)
@@ -146,6 +171,8 @@ end
 	gravitational_binding_energy(m::Unitful.Mass, r::Unitful.Length)
 	
 Calculate the gravitational binding energy of a body with mass `m` and radius `r`.
+
+``E_g = \\frac{3Gm^2}{5r}``
 """
 gravitational_binding_energy(m::Unitful.Mass, r::Unitful.Length) = (3G*m^2) / 5r |>u"J"
 
@@ -153,6 +180,10 @@ gravitational_binding_energy(m::Unitful.Mass, r::Unitful.Length) = (3G*m^2) / 5r
    roche_limit(r_primary::Unitful.Length, ρ_primary::Unitful.Density, ρ_satellite::Unitful.Density)
    
 Rigid body approximation of the Roche limit for a body with radius `r_primary` and density `ρ_primary`, approached by a body with density `ρ_satellite`.
+
+``r_r = r\\sqrt[2]{\frac{2ρ_p}{ρ_s}}``
+
+where ``r`` and ``ρ_p`` are the radius and density of the central body, and ρ_s is the density of the orbiting body.
 """
 roche_limit(r_primary::Unitful.Length, ρ_primary::Unitful.Density, ρ_satellite::Unitful.Density) = r_primary * cbrt(2ρ_primary / ρ_satellite) |> u"km"
 
@@ -176,6 +207,10 @@ barycentric_distance(m1::Unitful.Mass, m2::Unitful.Mass, a::Unitful.Length) = (a
 Approximate tidal acceleration felt by a body of radius `body_radius` at a distance of `separation` from a body of mass `parent_mass`.
 
 Changes in tidal acceleration are associated with effects like heating, etc.
+
+``a_t = \frac{2GMr}{s^3}``
+
+where ``M`` is the mass of the central body, ``r`` is the radius of the body being affected and ``s`` is the distance between the two bodies.
 """
 tidal_acceleration(body_radius::Unitful.Length, parent_mass::Unitful.Mass, separation::Unitful.Length) = 2body_radius * G * parent_mass / separation^3
 
