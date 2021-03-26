@@ -1,17 +1,42 @@
 module SfCoriolis
 
-using Unitful, UnitfulAngles
+using Unitful, UnitfulAngles, Documenter
 import LinearAlgebra: cross
 
-import ..SfGeometry: radius
+import ..SfGeometry: radius, unit_x, unit_y, unit_z
 import ..SfUnits: AngularVelocity, AngularMomentum, Angle, to_angle
 
 export coriolis_acceleration, coriolis_force, tangential_velocity, centrifugal_acceleration, centrifugal_force, 
 	angular_momentum, angular_velocity, radius
+	
+DocMeta.setdocmeta!(SfCoriolis, :DocTestSetup, :(using Unitful, UnitfulAstro, ..SfCoriolis, ..SfGeometry); recursive=true)
 
-coriolis_acceleration(rotation::Vector, velocity::Vector) = 2cross(rotation, velocity)
+# this can't be a jldoctest example right now, as there's some regex/string comparison error that breaks it.
+"""
+    coriolis_acceleration(Ω::Vector, v::Vector)
+	
+The apparent acceleration due to coriolis effects for an object moving with velolcity
+vector `v` in a rotating reference frame with angular velocity vector `Ω`.
 
-coriolis_force(mass::Unitful.Mass, rotation::Vector, velocity::Vector) = mass * coriolis_force(rotation, velocity)
+# Example
+
+```julia-repl
+julia> coriolis_acceleration(0.001u"rad/s" * unit_y, 400u"m/s" * unit_x)
+3-element Array{Quantity{Float64,𝐋  𝐓 ^-2,Unitful.FreeUnits{(m, s^-2),𝐋  𝐓 ^-2,nothing}},1}:
+  0.0 m s^-2
+  0.0 m s^-2
+ -0.8 m s^-2
+```
+"""
+coriolis_acceleration(Ω::Vector, v::Vector) = upreferred.(2cross(Ω, v))
+
+"""
+    coriolis_acceleration(Ω::Vector, v::Vector)
+	
+The strength of the coriolis force apparently acting on an object with mass `m` moving with velolcity
+vector `v` in a rotating reference frame with angular velocity vector `Ω`.
+"""
+coriolis_force(m::Unitful.Mass, Ω::Vector, v::Vector) = mass * coriolis_force(Ω, v)
 
 """
     tangential_velocity(ω::AngularVelocity, r::Unitful.Length)
