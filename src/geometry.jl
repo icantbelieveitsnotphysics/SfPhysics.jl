@@ -205,7 +205,7 @@ Compute the solid angle of a cone with its apex at the apex of the solid angle a
 
 See https://en.wikipedia.org/wiki/Solid_angle#Cone,_spherical_cap,_hemisphere
 """
-spherical_cap_solid_angle(θ) = 2π * (1 - cos(θ))
+spherical_cap_solid_angle(θ) = 2π * (1 - cos(θ)) * u"sr"
 
 """
     spherical_cap_solid_angle(h_cone::Unitful.Length, r_cone::Unitful.Length)
