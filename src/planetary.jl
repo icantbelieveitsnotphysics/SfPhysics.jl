@@ -136,13 +136,14 @@ import ..SfRelativity: relativistic_kinetic_energy
 import ..SfPhysics: kinetic_energy
 import ..SfMatter: density, mass
 import ..SfGeometry: spherical_cap_solid_angle, volume, radius, equatorial_radius, polar_radius, area, cross_sectional_area
+import ..SfAstronomy: absolute_magnitude
 
 import PhysicalConstants.CODATA2018: σ, G, k_B # σ = Stefan-Boltzmann constant, k_B Boltzmann constant
 
 export gravity, orbital_period, orbital_radius, orbital_velocity, escape_velocity, hill_sphere,
 	relativistic_kinetic_energy, kinetic_energy, stellar_luminosity, stellar_irradiance, planetary_equilibrium_temperature,
 	jeans_escape_timescale, jeans_parameter, gravitational_binding_energy, roche_limit, volume, density, radius, equatorial_radius,
-	area, cross_sectional_area
+	area, cross_sectional_area, absolute_magnitude
 
 """
 	gravity(body::AbstractBody)
@@ -417,4 +418,11 @@ jeans_parameter(m_planet::Unitful.Mass, m_molecule::Unitful.Mass, t_exosphere::U
 jeans_parameter(body::AbstractBody, m_molecule::Unitful.Mass, t_exosphere::Unitful.Temperature, r_exosphere::Unitful.Length) = 
 	jeans_parameter(mass(body), m_molecule, t_exosphere, r_exosphere)
 	
+"""
+    absolute_magnitude(body::Body)
+	
+Absolute magnitude of `body`, assuming it is a diffusely reflecting sphere with a known geometric albedo.
+"""
+absolute_magnitude(body::Body) = absolute_magnitude(radius(body), body.geometric_albedo)
+
 end

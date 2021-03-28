@@ -40,6 +40,10 @@ include("objects.jl")
 
 @reexport using .SfObjects
 
+include("astronomy.jl")
+
+@reexport using .SfAstronomy
+
 include("planetary.jl")
 include("solar.jl")
 
@@ -60,9 +64,5 @@ include("electro.jl")
 @reexport using .SfElectro
 
 include("weaponry.jl")
-
-include("astronomy.jl")
-
-@reexport using .SfAstronomy
 
 end
