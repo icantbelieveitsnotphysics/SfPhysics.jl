@@ -2,7 +2,7 @@
 
 import PhysicalConstants.CODATA2018: g_n
 
-import ..SfUnits: Angle, to_angle
+import ..SfUnits: Angle, to_angle, Acceleration
 
 export kinetic_energy, distance, duration, acceleration, projectile_displacement, projectile_velocity, 
 	projectile_flight_time, projectile_peak_displacement, projectile_range, projectile_angle, projectile_angle_planetary
@@ -79,80 +79,80 @@ Given a distance `d`, initial velocity `v_initial and desired velocity `v_final`
 acceleration(d::Unitful.Length, v_final::Unitful.Velocity, v_initial::Unitful.Velocity = 0u"m/s") = (v_final^2 - v_initial^2) / 2d
 
 """
-    projectile_displacement(v_0::Unitful.Velocity, θ::Angle, t::Unitful.Time, g::Accel = g_n)
+    projectile_displacement(v_0::Unitful.Velocity, θ::Angle, t::Unitful.Time, g::Acceleration = g_n)
 	
 Horizontal and vertical displacement at time `t` of a projectile with initial velocity `v_0` and launch angle `θ` in a unitform gravitational acceleration `g`.
 """
-projectile_displacement(v_0::Unitful.Velocity, θ::Angle, t::Unitful.Time, g::Accel = g_n) =
+projectile_displacement(v_0::Unitful.Velocity, θ::Angle, t::Unitful.Time, g::Acceleration = g_n) =
     [ v_0 * t * cos(θ), v_0 * t * sin(θ) - 0.5g * t^2 ]
 
 """
-    projectile_displacement(v_0::Unitful.Velocity, t::Unitful.Time, g::Accel = g_n)
+    projectile_displacement(v_0::Unitful.Velocity, t::Unitful.Time, g::Acceleration = g_n)
 	
 Vertical displacement at time `t` of a projectile launched vertically with initial velocity `v_0` in a unitform gravitational acceleration `g`.
 """
-projectile_displacement(v_0::Unitful.Velocity, t::Unitful.Time, g::Accel = g_n) = projectile_displacement(v_0, 90u"°", g, t)[2]
+projectile_displacement(v_0::Unitful.Velocity, t::Unitful.Time, g::Acceleration = g_n) = projectile_displacement(v_0, 90u"°", g, t)[2]
 
 """
-    projectile_velocity(v_0::Unitful.Velocity, θ::Angle, t::Unitful.Time, g::Accel = g_n)
+    projectile_velocity(v_0::Unitful.Velocity, θ::Angle, t::Unitful.Time, g::Acceleration = g_n)
 	
 Horizontal and vertical velocity at time `t` of a projectile with initial velocity `v_0` and launch angle `θ` in a unitform gravitational acceleration `g`.
 """
-projectile_velocity(v_0::Unitful.Velocity, θ::Angle, t::Unitful.Time, g::Accel = g_n) =
+projectile_velocity(v_0::Unitful.Velocity, θ::Angle, t::Unitful.Time, g::Acceleration = g_n) =
     [ v_0 * cos(θ), v_0 * sin(θ) - g * t ]
 
 """
-    projectile_velocity(v_0::Unitful.Velocity, t::Unitful.Time, g::Accel = g_n)
+    projectile_velocity(v_0::Unitful.Velocity, t::Unitful.Time, g::Acceleration = g_n)
 	
 Velocity at time `t` of a projectile launched vertically with initial velocity `v_0` in a unitform gravitational acceleration `g`.
 """
-projectile_velocity(v_0::Unitful.Velocity, t::Unitful.Time, g::Accel = g_n) = projectile_velocity(v_0, 90u"°", g, t)[2]
+projectile_velocity(v_0::Unitful.Velocity, t::Unitful.Time, g::Acceleration = g_n) = projectile_velocity(v_0, 90u"°", g, t)[2]
 
 """
-    projectile_flight_time(v_0::Unitful.Velocity, θ::Angle = 90u"°", g::Accel = g_n)
+    projectile_flight_time(v_0::Unitful.Velocity, θ::Angle = 90u"°", g::Acceleration = g_n)
 	
 Compute total flight time for a projectile launched at angle `θ` with initial velocity `v_0` in a uniform gravitation acceleration `g`.
 
 Flight is considered to be complete when vertical displacement returns to zero.
 """
-projectile_flight_time(v_0::Unitful.Velocity, θ::Angle = 90u"°", g::Accel = g_n) = 2v_0 * sin(θ) / g |> u"s"
+projectile_flight_time(v_0::Unitful.Velocity, θ::Angle = 90u"°", g::Acceleration = g_n) = 2v_0 * sin(θ) / g |> u"s"
 
 """
-    projectile_peak_displacement(v_0::Unitful.Velocity, θ::Angle = 90u"°", g::Accel = g_n)
+    projectile_peak_displacement(v_0::Unitful.Velocity, θ::Angle = 90u"°", g::Acceleration = g_n)
 	
 Compute peak altitude of a projectile launched at angle `θ` with initial velocity `v_0` in a uniform gravitation acceleration `g`.
 
 Default launch angle is 90° for maximum height.
 """
-projectile_peak_displacement(v_0::Unitful.Velocity, θ::Angle = 90u"°", g::Accel = g_n) = (v_0^2 * sin(θ)^2) / 2g
+projectile_peak_displacement(v_0::Unitful.Velocity, θ::Angle = 90u"°", g::Acceleration = g_n) = (v_0^2 * sin(θ)^2) / 2g
 
 """
-    projectile_range(v_0::Unitful.Velocity, θ::Angle = 45u"°", g::Accel = g_n)
+    projectile_range(v_0::Unitful.Velocity, θ::Angle = 45u"°", g::Acceleration = g_n)
 	
 Compute range of a projectile launched at angle `θ` with initial velocity `v_0` in a uniform gravitation acceleration `g`.
 
 Default launch angle is 45° for maximum range.
 """
-projectile_range(v_0::Unitful.Velocity, θ::Angle = 45u"°", g::Accel = g_n) = (v_0^2 * sin(2θ)) / g
+projectile_range(v_0::Unitful.Velocity, θ::Angle = 45u"°", g::Acceleration = g_n) = (v_0^2 * sin(2θ)) / g
 
 """
-    projectile_range(v_0::Unitful.Velocity, y_0::Unitful.Length, θ::Angle = 45u"°", g::Accel = g_n)
+    projectile_range(v_0::Unitful.Velocity, y_0::Unitful.Length, θ::Angle = 45u"°", g::Acceleration = g_n)
 	
 Compute range of a projectile launched from altitude `y_0` at angle `θ` with initial velocity `v_0` in a uniform gravitation acceleration `g`.
 
 Range is reached when vertical displacement is zero. Default launch angle is 45° for maximum range.
 """
-projectile_range(v_0::Unitful.Velocity, y_0::Unitful.Length, θ::Angle = 45u"°", g::Accel = g_n) =
+projectile_range(v_0::Unitful.Velocity, y_0::Unitful.Length, θ::Angle = 45u"°", g::Acceleration = g_n) =
 	(v_0 * cos(θ) / g) * (v_0 * sin(θ) + sqrt((v_0 * sin(θ))^2 + 2g * y_0))
 	
 """
-    projectile_range_planetary(v_0::Unitful.Velocity, r_planet::Unitful.Length = 1u"Rearth", θ::Angle = 45u"°", g::Accel = g_n)
+    projectile_range_planetary(v_0::Unitful.Velocity, r_planet::Unitful.Length = 1u"Rearth", θ::Angle = 45u"°", g::Acceleration = g_n)
 	
 Compute range of a projectile launched from altitude `y_0` at angle `θ` with initial velocity `v_0` on a spherical planet with radius `r_planet` and surface gravity `g`.
 
 NOTE: this should be called `projectile_range`, but weird internal compiler errors prevent that with this version of Julia (1.5.3).
 """
-function projectile_range_planetary(v_0::Unitful.Velocity, θ::Angle = 45u"°", r_planet::Unitful.Length = 1u"Rearth", g::Accel = g_n)
+function projectile_range_planetary(v_0::Unitful.Velocity, θ::Angle = 45u"°", r_planet::Unitful.Length = 1u"Rearth", g::Acceleration = g_n)
 	v_rat2 = (v_0 / sqrt(r_planet * g))^2
 	
 	if v_rat2 > 1
@@ -165,7 +165,7 @@ function projectile_range_planetary(v_0::Unitful.Velocity, θ::Angle = 45u"°", 
 	return a / b |> u"m"
 end
 
-function projectile_peak_displacement_planetary(v_0::Unitful.Velocity, θ::Angle = 45u"°", r_planet::Unitful.Length = 1u"Rearth", g::Accel = g_n)
+function projectile_peak_displacement_planetary(v_0::Unitful.Velocity, θ::Angle = 45u"°", r_planet::Unitful.Length = 1u"Rearth", g::Acceleration = g_n)
 	v_rat2 = (v_0 / sqrt(r_planet * g))^2
 	
 	if v_rat2 > 1
@@ -179,13 +179,13 @@ function projectile_peak_displacement_planetary(v_0::Unitful.Velocity, θ::Angle
 end
 	
 """
-    projectile_angle(v_0::Unitful.Velocity, d::Unitful.Length, g::Accel = g_n)
+    projectile_angle(v_0::Unitful.Velocity, d::Unitful.Length, g::Acceleration = g_n)
 	
 Compute the possible launch angles for a projectile to reach a horizontal range of `d` given initial velocity `v_0` in a uniform gravitation acceleration `g`.
 
 The shallow angle is the first result, the steep angle the second. A domain error is raised if the target is out of range.
 """
-function projectile_angle(v_0::Unitful.Velocity, d::Unitful.Length, g::Accel = g_n)
+function projectile_angle(v_0::Unitful.Velocity, d::Unitful.Length, g::Acceleration = g_n)
 	k = (g * d) / v_0^2
 	
 	if (k > 1)
@@ -196,13 +196,13 @@ function projectile_angle(v_0::Unitful.Velocity, d::Unitful.Length, g::Accel = g
 end
 	
 """
-    projectile_angle(v_0::Unitful.Velocity, d::Unitful.Length, y::Unitful.Length, g::Accel = g_n)
+    projectile_angle(v_0::Unitful.Velocity, d::Unitful.Length, y::Unitful.Length, g::Acceleration = g_n)
 	
 Compute the possible launch angles for a projectile to reach a horizontal range of `d` and altitude of `y` relative to the starting point given initial velocity `v_0` in a uniform gravitation acceleration `g`.
 
 The shallow angle is the first result, the steep angle the second. A domain error is raised if the target is out of range.
 """
-function projectile_angle(v_0::Unitful.Velocity, d::Unitful.Length, y::Unitful.Length, g::Accel = g_n)
+function projectile_angle(v_0::Unitful.Velocity, d::Unitful.Length, y::Unitful.Length, g::Acceleration = g_n)
 	det = v_0^4 - g * (g * d^2 + 2y * v_0^2)
 	
 	if (ustrip(det) < 0)
@@ -220,9 +220,9 @@ function projectile_angle(v_0::Unitful.Velocity, d::Unitful.Length, y::Unitful.L
 end
 
 """
-    projectile_optimum_angle(v_0::Unitful.Velocity, r_planet::Unitful.Length = 1u"Rearth", g::Accel = g_n)
+    projectile_optimum_angle(v_0::Unitful.Velocity, r_planet::Unitful.Length = 1u"Rearth", g::Acceleration = g_n)
 """
-function projectile_optimum_angle(v_0::Unitful.Velocity, r_planet::Unitful.Length = 1u"Rearth", g::Accel = g_n)
+function projectile_optimum_angle(v_0::Unitful.Velocity, r_planet::Unitful.Length = 1u"Rearth", g::Acceleration = g_n)
 	v_rat2 = (v_0 / sqrt(r_planet * g))^2
 	
 	if v_rat2 > 0
