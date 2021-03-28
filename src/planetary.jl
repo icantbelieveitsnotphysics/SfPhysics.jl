@@ -136,14 +136,14 @@ import ..SfRelativity: relativistic_kinetic_energy
 import ..SfPhysics: kinetic_energy
 import ..SfMatter: density, mass
 import ..SfGeometry: spherical_cap_solid_angle, volume, radius, equatorial_radius, polar_radius, area, cross_sectional_area
-import ..SfAstronomy: absolute_magnitude
+import ..SfAstronomy: absolute_magnitude, apparent_magnitude, diffuse_sphere_q
 
 import PhysicalConstants.CODATA2018: σ, G, k_B # σ = Stefan-Boltzmann constant, k_B Boltzmann constant
 
 export gravity, orbital_period, orbital_radius, orbital_velocity, escape_velocity, hill_sphere,
 	relativistic_kinetic_energy, kinetic_energy, stellar_luminosity, stellar_irradiance, planetary_equilibrium_temperature,
 	jeans_escape_timescale, jeans_parameter, gravitational_binding_energy, roche_limit, volume, density, radius, equatorial_radius,
-	area, cross_sectional_area, absolute_magnitude
+	area, cross_sectional_area, absolute_magnitude, apparent_magnitude, star, stellar_distance
 
 """
 	gravity(body::AbstractBody)
@@ -318,6 +318,40 @@ radius(orbit::Orbit) = orbit.semi_major_axis
 Return the mass of `body`.
 """
 mass(body::AbstractBody) = body.mass
+
+"""
+    star(body::AbstractBody)
+	
+Recuse upwards through the hierarchy of orbits to find the star that `body` ultimately orbits. If there is no parent star, `nothing` is returned.
+"""
+function star(body::AbstractBody)
+	if typeof(body) == Star
+		return star
+	elseif body.orbit == nothing
+		return nothing
+	else
+		return star(body.orbit.parent)
+	end
+end
+
+"""
+	stellar_distance(body::AbstractBody)
+	
+Returns the approximate average distance of `body` to its parent star, if any. If there is no parent star, an error is raised. If `body` is a star, 0 is returned.
+
+This returns the average radius of the top-level orbit, and so is only a loose approximation for eccentric.
+"""
+function stellar_distance(body::AbstractBody)
+	if typeof(body) == Star
+		return 0u"AU"
+	elseif body.orbit == nothing
+		error("Body does not ultimately orbit a star")
+	elseif typeof(body.orbit.parent) == Star
+		return radius(body.orbit)
+	else
+		return stellar_distance(body.orbit.parent)
+	end
+end
 	
 """
 	stellar_luminosity(r_star::Unitful.Length, t_surface::Unitful.Temperature, r_star_p = r_star)
@@ -357,17 +391,13 @@ as a proxy for average orbital distance.
 This method will deadlock if used on a binary or multiple system at present.
 """
 function stellar_irradiance(body::AbstractBody)
-	orbit = body.orbit
-	
-	while typeof(orbit.parent) != Star
-		orbit = orbit.parent.orbit
+	s = star(body)
 		
-		if orbit == nothing
-			error("Body does not ultimately orbit a star")
-		end
+	if s == nothing
+		error("Body does not ultimately orbit a star")
 	end
 	
-	return stellar_irradiance(stellar_luminosity(orbit.parent), orbit.semi_major_axis, radius(body))
+	return stellar_irradiance(stellar_luminosity(s), orbit.semi_major_axis, radius(body))
 end
 
 """
@@ -424,5 +454,15 @@ jeans_parameter(body::AbstractBody, m_molecule::Unitful.Mass, t_exosphere::Unitf
 Absolute magnitude of `body`, assuming it is a diffusely reflecting sphere with a known geometric albedo.
 """
 absolute_magnitude(body::Body) = absolute_magnitude(radius(body), body.geometric_albedo)
+
+"""
+    apparent_magnitude(observer::AbstractBody, observed::Body, separation::Unitful.Length, phase::Angle)
+	
+Apparent magnitude of `observed` as seen from `observer` at a distance of `separation` with `phase` angle.
+
+`observed` is assumed to be a diffusely reflecting sphere. Values will be incorrect for non-spherical bodies.
+"""
+apparent_magnitude(observer::AbstractBody, observed::Body, separation::Unitful.Length, phase::Angle) =
+	apparent_magnitude(absolute_magnitude(observed), stellar_distance(observed), separation, stellar_distance(observer), diffuse_sphere_q(phase))
 
 end
