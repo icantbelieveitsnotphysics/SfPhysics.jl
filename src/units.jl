@@ -19,6 +19,7 @@ const Angle{T} = Union{ Quantity{T, NoDims, typeof(u"°")}, Quantity{T, NoDims, 
 to_angle(a::Real) = Angle(a * u"°")	
 to_angle(a::Angle) = a
 to_angle(::Nothing) = nothing
+to_angle(::Missing) = missing
 
 @unit tt "tt" TonneTNT 4.184e+9u"J" true
 @refunit Kdv "Kdv" Kardashev KP false

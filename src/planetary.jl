@@ -39,9 +39,18 @@ struct Orbit
 	semi_major_axis::Unitful.Length
 	eccentricity::Real
 	inclination::Angle # relative to equator of parent body
-	ascending_node::Union{Nothing, Angle}
-	periapsis::Union{Nothing, Angle}
+	ascending_node::Union{Missing, Angle}
+	periapsis::Union{Missing, Angle}
 end
+
+Orbit(parent::AbstractBody, 
+		semi_major_axis::Unitful.Length, eccentricity::Real, 
+		inclination::Real, ascending_node::Union{Missing, Real} = missing, periapsis::Union{Missing, Real} = missing) =
+	Orbit(parent, semi_major_axis, eccentricity, to_angle(inclination), to_angle(ascending_node), to_angle(periapsis))
+	
+# needed to avoid some awkward ambiguous method resolution issues :(
+Orbit(parent::AbstractBody, semi_major_axis::Unitful.Length, eccentricity::Real, inclination::Angle) =
+	Orbit(parent, semi_major_axis, eccentricity, to_angle(inclination), missing, missing)
 
 """
     Rotation(moment_of_inertia::Union{Nothing, Real}, rotation_period::Unitful.Time, axial_tilt::Angle)
@@ -49,7 +58,7 @@ end
 Describe the rotation of a body about its axis, with an optional `moment_of_inertia` and an `axial_tilt` relative to either its orbit or the local ecliptic depending on context.
 """
 struct Rotation
-	moment_of_inertia::Union{Nothing, Real}
+	moment_of_inertia::Union{Missing, Real}
 	rotation_period::Unitful.Time
 	axial_tilt::Angle	
 end
@@ -87,17 +96,18 @@ struct Body <: AbstractBody
 	name::String
 	mass::Unitful.Mass
 	shape::Shape
-	bond_albedo::Union{Nothing, Real}
+	bond_albedo::Union{Missing, Real}
+	geometric_albedo::Union{Missing, Real}
 	orbit::Union{Nothing, Orbit}
 	rotation::Union{Nothing, Rotation}
 	
 """
-    Body(name::String, mass::Unitful.Mass, shape::Shape, bond_albedo::Union{Nothing, Real}, orbit::Union{Nothing, Orbit}, rotation::Union{Nothing, Rotation})
+    Body(name::String, mass::Unitful.Mass, shape::Shape, bond_albedo::Union{Missing, Real}, geometric_albedo::Union{Missing, Real}, orbit::Union{Nothing, Orbit}, rotation::Union{Nothing, Rotation})
 	
 Construct a new body with the given characteristics, with an optional `orbit` defining its relationship with a parent body and optional `rotation` defining the nature of its day.
 """
-	function Body(name::String, mass::Unitful.Mass, shape::Shape, bond_albedo::Union{Nothing, Real}, orbit::Union{Nothing, Orbit}, rotation::Union{Nothing, Rotation})
-		b = new(name, mass, shape, bond_albedo, orbit, rotation)
+	function Body(name::String, mass::Unitful.Mass, shape::Shape, bond_albedo::Union{Missing, Real}, geometric_albedo::Union{Missing, Real}, orbit::Union{Nothing, Orbit}, rotation::Union{Nothing, Rotation})
+		b = new(name, mass, shape, bond_albedo, geometric_albedo, orbit, rotation)
 		
 		if orbit != nothing
 			add_satellite(orbit.parent, b)
@@ -107,24 +117,15 @@ Construct a new body with the given characteristics, with an optional `orbit` de
 	end
 end
 
-Orbit(parent::AbstractBody, 
-		semi_major_axis::Unitful.Length, eccentricity::Real, 
-		inclination::Real, ascending_node::Union{Nothing, Real} = nothing, periapsis::Union{Nothing, Real} = nothing) =
-	Orbit(parent, semi_major_axis, eccentricity, to_angle(inclination), to_angle(ascending_node), to_angle(periapsis))
-	
-# needed to avoid some awkward ambiguous method resolution issues :(
-Orbit(parent::AbstractBody, semi_major_axis::Unitful.Length, eccentricity::Real, inclination::Angle) =
-	Orbit(parent, semi_major_axis, eccentricity, to_angle(inclination), nothing, nothing)
-
 """
     Body(name::String, mass::Unitful.Mass, radius::Unitful.Length, bond_albedo::Union{Nothing, Real} = nothing)
 	
 Construct a spherical, non-rotating, solitary astronomical body with the given characteristics.
 """	
-Body(name::String, mass::Unitful.Mass, radius::Unitful.Length, bond_albedo::Union{Nothing, Real} = nothing) =
-	Body(name, mass, Sphere(radius), bond_albedo, nothing, nothing)
+Body(name::String, mass::Unitful.Mass, radius::Unitful.Length, bond_albedo::Union{Missing, Real} = missing, geometric_albedo::Union{Missing, Real} = missing) =
+	Body(name, mass, Sphere(radius), bond_albedo, geometric_albedo, nothing, nothing)
 	
-Rotation(moment_of_inertia::Union{Nothing, Real}, rotation_period::Unitful.Time, axial_tilt::Real) =
+Rotation(moment_of_inertia::Union{Missing, Real}, rotation_period::Unitful.Time, axial_tilt::Real) =
 	Rotation(moment_of_inertia, rotation_period, to_angle(axial_tilt))
 
 #####################################################################################
