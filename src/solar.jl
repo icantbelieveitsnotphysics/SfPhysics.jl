@@ -12,7 +12,7 @@ using ..SfPlanetary, ..SfGeometry
 const sol = Star("Sol", 1u"Msun", 1u"Rsun", 5772u"K", 4.83, "G2V")
 
 const mercury = Body(
-			"Mercury", 3.3011u"kg" * big(10)^23, Sphere(2439.7u"km"), 0.088, 0.142,
+			"Mercury", (0.330114±0.000021)*1e24u"kg", Sphere((2439.4±0.1)u"km"), 0.088, 0.142,
 			Orbit(sol, 0.387098u"AU", 0.205630, 3.38, 48.331, 23.124),
 			Rotation(0.346, 1407.5u"hr", 0.034))
 
@@ -55,22 +55,22 @@ const jupiter = Body(
 			
 const io = Body(
 			"Io", 8.931938e22u"kg", Sphere(18621.6u"km"), missing, 0.63±0.02,
-			Orbit(jupiter, 421700u"km", 0.0041, 0.05, missing, missing), # not quite an elliptical orbit; has resonance issues
+			Orbit(jupiter, 421700u"km", 0.0041, 0.05), # not quite an elliptical orbit; has resonance issues
 			Rotation(0.37824, 1.769137786u"d", 0))
 
 const europa = Body(
 			"Europa", 4.799844e22u"kg", Sphere(1560.8u"km"), missing, 0.67±0.03,
-			Orbit(jupiter, 670900u"km", 0.009, 0.47, missing, missing), # not quite an elliptical orbit
+			Orbit(jupiter, 670900u"km", 0.009, 0.47), # not quite an elliptical orbit
 			Rotation(0.346, 3.551181u"d", 0.1))
 
 const ganymede = Body(
 			"Ganymede", 1.4819e23u"kg", Sphere(2634.1u"km"), missing, 0.43±0.02,
-			Orbit(jupiter, 1070400u"km", 0.0013, 0.2, missing, missing), # this one is elliptical
+			Orbit(jupiter, 1070400u"km", 0.0013, 0.2), # this one is elliptical
 			Rotation(0.3115, 7.15455296u"d", 0.33)),
 
 const callisto = Body(
 			"Callisto", 1.075938e23u"kg", Sphere(2410.3u"km"), missing, 0.17±0.02,
-			Orbit(jupiter, 1882700u"km", 0.0074, 0.192, missing, missing), # also actually elliptical
+			Orbit(jupiter, 1882700u"km", 0.0074, 0.192), # also actually elliptical
 			Rotation(0.3549, 16.6890184u"d", 0))
 
 const saturn = Body(
@@ -80,7 +80,7 @@ const saturn = Body(
 			
 const titan = Body(
 			"Titan", 1.3452e23u"kg", Sphere(2574.73u"km"), missing, 0.22,
-			Orbit(saturn, 1221870u"km", 0.0288, 0.34854, missing, missing),# inclination to Saturn's equator
+			Orbit(saturn, 1221870u"km", 0.0288, 0.34854),# inclination to Saturn's equator
 			Rotation(0.3414, 15.945u"d", 0))
 
 const uranus = Body(
