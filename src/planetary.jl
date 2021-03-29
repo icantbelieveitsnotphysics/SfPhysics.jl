@@ -1,7 +1,7 @@
 module SfPlanetary
 
 using Unitful, UnitfulAstro, UnitfulAngles
-using ..SfGeometry
+using ..SfGeometry, ..SfThermo
 
 export Body, Orbit, Rotation, Star
 export satellites
@@ -428,9 +428,9 @@ planetary_equilibrium_temperature(body::Body) =
 # temperature, exosphere altiutude, planetary mass, planetary radius, gas molecular mass
 # http://cococubed.asu.edu/code_pages/jeans_escape.shtml
 function jeans_escape_timescale(T::Unitful.Temperature, h::Unitful.Length, M::Unitful.Mass, R::Unitful.Length, m::Unitful.Mass)
-   g = (G*M)/(R+h)^2
+   g = (G*M)/(R+h)^2 # gravity at exobase
    H = (k_B*T)/(m*g) # scale height for gas
-   v_peak=sqrt((2k_B*T)/m) # peak of maxwell-boltzmann distribution
+   v_peak=maxwell_boltzmann_peak_speed(m, T) # peak of maxwell-boltzmann distribution
    v_esc=sqrt((2G*M)/(R+h)) # escape velocity of planet at exosphere altitude
    λ =(v_esc/v_peak)^2
    v_jeans = v_peak * ((1 + λ)*exp(-λ))/sqrt(4π)
