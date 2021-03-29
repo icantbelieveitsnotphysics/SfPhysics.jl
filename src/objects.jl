@@ -4,7 +4,7 @@ using Unitful, ..SfGeometry, ..SfMatter
 
 import ..SfMatter: mass, density, bouyancy
 
-export mass
+export mass, bouyancy
 
 """
     mass(m::Material, s::Shape)
