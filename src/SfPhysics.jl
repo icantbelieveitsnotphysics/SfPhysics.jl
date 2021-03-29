@@ -44,6 +44,10 @@ include("astronomy.jl")
 
 @reexport using .SfAstronomy
 
+include("thermo.jl")
+
+@reexport using .SfThermo
+
 include("planetary.jl")
 include("solar.jl")
 
