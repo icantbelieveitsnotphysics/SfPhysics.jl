@@ -48,20 +48,48 @@ julia> gravity(1u"Mearth", 100u"kg", 1u"Rearth")
 gravity(m1::Unitful.Mass, m2::Unitful.Mass, r::Unitful.Length) = G * m1 * m2 / r^2 |> u"N"
 	
 """
-	planetary_mass(acc::Unitful.Acceleration, r::Unitful.Length)
+	planetary_mass(g::Unitful.Acceleration, r::Unitful.Length)
 	
-Calculate the mass of a body required to produce gravitational acceleration `acc` at a distance of `r`.
+Calculate the mass of a body required to produce gravitational acceleration `g` at a distance of `r`.
 """
-planetary_mass(acc::Unitful.Acceleration, r::Unitful.Length) = (acc * r^2) / G |> u"kg"
-	
-"""
-	planetary_radius(m::Unitful.Mass, acc::Unitful.Acceleration)
-	
-Calculate the radius of a planet of mass `m` with surface gravitational acceleration of `acc`.
-"""
-planetary_radius(m::Unitful.Mass, acc::Unitful.Acceleration) = sqrt((G * m) / acc) |> u"m"
+planetary_mass(g::Unitful.Acceleration, r::Unitful.Length) = (g * r^2) / G |> u"kg"
 
-	# kepler's third
+"""
+	planetary_mass(ve::Unitful.Velocity, r::Unitful.Length)
+	
+Calculate the mass of a body required to produce escape velocity `ve` at a distance of `r`.
+"""
+planetary_mass(ve::Unitful.Velocity, r::Unitful.Length) = r * ve^2 / 2G |> u"kg"
+	
+"""
+	planetary_radius(m::Unitful.Mass, g::Unitful.Acceleration)
+	
+Radius of a spherical planet of mass `m` with surface gravitational acceleration of `g`.
+"""
+planetary_radius(m::Unitful.Mass, g::Unitful.Acceleration) = sqrt((G * m) / g) |> u"m"
+
+"""
+	planetary_radius(m::Unitful.Mass, g::Unitful.Acceleration)
+	
+Radius of a spherical planet of mass `m` with surface escape velocity `ve`.
+"""
+planetary_radius(m::Unitful.Mass, ve::Unitful.Velocity) = 2G * m / ve^2 |> u"m"
+
+"""
+	planetary_radius(ρ::Unitful.Density, g::Unitful.Acceleration)
+	
+Radius of a spherical planet of density `ρ` with surface gravitational acceleration of `g`.
+"""
+planetary_radius(ρ::Unitful.Density, g::Unitful.Acceleration) = 3g / (4G * π * ρ) |> u"m"
+
+"""
+	planetary_radius(ρ::Unitful.Density, ve::Unitful.Velocity)
+	
+Radius of a spherical planet of density `ρ` with surface escape velocity `ve`.
+"""
+planetary_radius(ρ::Unitful.Density, ve::Unitful.Velocity) = sqrt(3ve^2 / (8G * π * ρ)) |> u"m"
+
+# kepler's third
 	
 """
 	orbital_period(m::Unitful.Mass, r::Unitful.Length)
@@ -146,13 +174,6 @@ escape_velocity(m::Unitful.Mass, r::Unitful.Length) = sqrt(2G * m / r) |> u"km/s
 Calculate the mass of a body with escape velocity `v_esc` at distance `r`.
 """
 planetary_mass(r::Unitful.Length, v_esc::Unitful.Velocity) = v_esc^2 * r / 2G |> u"kg"
-	
-"""
-	planetary_radius(m::Unitful.Mass, v_esc::Unitful.Velocity)
-	
-Calculate the radius of a body of mass `m` with a surface escape velocity of `v_esc`.
-"""
-planetary_radius(m::Unitful.Mass, v_esc::Unitful.Velocity) = 2G * m / v_esc^2 |> u"m"
 
 """
 	hill_sphere(m_parent::Unitful.Mass, m::Unitful.Mass, sma::Unitful.Length, e = 0)
