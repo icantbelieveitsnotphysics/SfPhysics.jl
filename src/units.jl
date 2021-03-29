@@ -11,12 +11,15 @@ const Power{T, U} = Unitful.AbstractQuantity{T,Unitful.𝐋^2*Unitful.𝐌*Unitf
 const Energy{T, U} = Unitful.AbstractQuantity{T,Unitful.𝐋^2*Unitful.𝐌*Unitful.𝐓^-2,U}
 const AngularVelocity{T, U} = Unitful.AbstractQuantity{T, Unitful.𝐓 ^-1, U}
 const AngularMomentum{T, U} = Unitful.AbstractQuantity{T, Unitful.𝐋^2 * Unitful.𝐌 * Unitful.𝐓 ^-1, U}
+const Acceleration{T, U} = Unitful.AbstractQuantity{T,Unitful.𝐋*Unitful.𝐓^-2, U}
+const Speed{T, U} = Unitful.AbstractQuantity{T,Unitful.𝐋*Unitful.𝐓^-1, U}
 
 const Angle{T} = Union{ Quantity{T, NoDims, typeof(u"°")}, Quantity{T, NoDims, typeof(u"rad")} }
 	
 to_angle(a::Real) = Angle(a * u"°")	
 to_angle(a::Angle) = a
 to_angle(::Nothing) = nothing
+to_angle(::Missing) = missing
 
 @unit tt "tt" TonneTNT 4.184e+9u"J" true
 @refunit Kdv "Kdv" Kardashev KP false
