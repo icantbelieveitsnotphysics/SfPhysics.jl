@@ -1,6 +1,7 @@
 module SfGeometry
 
 using Unitful
+import Elliptic: E, F
 
 import Base: length
 
@@ -159,7 +160,21 @@ function area(x::Spheroid)
 	end
 end
 
-area(x::TriaxialEllipsoid) = error("Surface area of a triaxial TriaxialEllipsoid not yet implemented")
+function area(x::TriaxialEllipsoid)
+	# sort axes ascending
+	c, b, a = sort([x.a, x.b, x.c])
+
+	cos_ϕ = x.c / x.a
+	ϕ = acos(cos_ϕ)
+	sin_ϕ = sin(ϕ)
+	
+	k = sqrt((a^2 * (b^2 - c^2))/(b^2 * (a^2 - c^2)))
+	
+	e = E(ϕ, k)
+	f = F(ϕ, k)
+	
+	2π * c^2 + ((2π * a * b) / sin_ϕ) * (e * sin_ϕ^2 + f * cos_ϕ^2)
+end
 
 """
     area(x::Cuboid)
