@@ -74,7 +74,9 @@ struct Star <: AbstractBody
 	orbit::Union{Nothing, Orbit}
 	rotation::Union{Nothing, Rotation}
 	
-	function Star(name::String, mass::Unitful.Mass, shape::Shape, temp::Unitful.Temperature, amag::Real, class::String, orbit::Union{Nothing, Orbit} = nothing, rotation::Union{Nothing, Rotation} = nothing)
+	function Star(name::String, mass::Unitful.Mass, shape::Shape, temp::Unitful.Temperature, amag::Real, class::String, 
+			orbit::Union{Nothing, Orbit} = nothing, 
+			rotation::Union{Nothing, Rotation} = nothing)
 		b = new(name, mass, shape, temp, amag, class, orbit, rotation)
 		
 		if orbit != nothing
@@ -90,7 +92,8 @@ end
 	
 Construct a spherical, non-rotating, solitary star with the given characteristics.
 """
-Star(name::String, mass::Unitful.Mass, radius::Unitful.Length, temp::Unitful.Temperature, amag::Real, class::String) = Star(name, mass, Sphere(radius), temp, amag, class)
+Star(name::String, mass::Unitful.Mass, radius::Unitful.Length, temp::Unitful.Temperature, amag::Real, class::String) = 
+	Star(name, mass, Sphere(radius), temp, amag, class)
 
 struct Body <: AbstractBody
 	name::String
