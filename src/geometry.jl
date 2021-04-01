@@ -4,7 +4,7 @@ using Unitful
 
 import Base: length
 
-export Shape, AbstractEllipsoid, Ellipsoid, Spheroid, Sphere, SphericalShell, Cylinder, Cuboid, Cube
+export Shape, Ellipsoid, TriaxialEllipsoid, Spheroid, Sphere, SphericalShell, Cylinder, Cuboid, Cube
 export volume, radius, area, length
 export unit_x, unit_y, unit_z, sphere_volume, sphere_radius, cylinder_volume, cylinder_radius, cylinder_length, 
 	spherical_cap_solid_angle, is_sphere, is_spheroid, is_triaxial, equatorial_radius, polar_radius, 
@@ -22,24 +22,40 @@ cylinder_radius(v::Unitful.Volume, h::Unitful.Length) = sqrt(v / (π * h))
 cylinder_length(v::Unitful.Volume, r::Unitful.Length) = v / (π * r^2)
 
 abstract type Shape end
-abstract type AbstractEllipsoid <: Shape end
+abstract type Ellipsoid <: Shape end
 
-struct Ellipsoid <: AbstractEllipsoid
+struct TriaxialEllipsoid <: Ellipsoid
 	a::Unitful.Length
 	b::Unitful.Length
 	c::Unitful.Length
 end
 
-struct Spheroid <: AbstractEllipsoid
+struct Spheroid <: Ellipsoid
 	equatorial_radius::Unitful.Length
 	polar_radius::Unitful.Length
 end
 
-struct Sphere <: AbstractEllipsoid
+struct Sphere <: Ellipsoid
 	radius::Unitful.Length
 end
 
 Sphere(v::Unitful.Volume) = Sphere(sphere_radius(v))
+
+Ellipsoid(r::Unitful.Length) = Sphere(r)
+Ellipsoid(equatorial_radius::Unitful.Length, polar_radius::Unitful.Length) = 
+	equatorial_radius == polar_radius ? Sphere(equatorial_radius) : Spheroid(equatorial_radius, polar_radius)
+
+function Ellipsoid(a::Unitful.Length, b::Unitful.Length, c::Unitful.Length)
+	if a == b && b == c
+		return Sphere(a)
+	elseif a == b || b == c
+		return Spheroid(a, c)
+	elseif a == c
+		return Spheroid(a, b)
+	else
+		return TriaxialEllipsoid(a, b, c)
+	end
+end
 
 struct Cylinder <: Shape
 	radius::Unitful.Length
@@ -55,22 +71,15 @@ end
 Cube(l::Unitful.Length) = Cuboid(l, l, l)
 Cube(v::Unitful.Volume) = Cube(cbrt(v))
 
-struct SphericalShell <: AbstractEllipsoid
+struct SphericalShell <: Ellipsoid
 	r_inner::Unitful.Length
 	r_outer::Unitful.Length
 end
 
 SphericalShell(r_inner::Unitful.Length, v::Unitful.Volume) = SphericalShell(r_inner, r_inner + spherical_shell_thickness)
+SphericalShell(s1::Sphere, s2::Sphere) = SphericalShell(min(radius(s1), radius(s2)), max(radius(s1), radius(s2)))
 
-function SphericalShell(s1::AbstractEllipsoid, s2::AbstractEllipsoid)
-	if !is_sphere(s1) && is_sphere(s2)
-		error("Cannot construct a spherical shell from non-spherical constraints")
-	end
-
-	return SphericalShell(min(radius(s1), radius(s2)), max(radius(s1), radius(s2)))
-end
-
-volume(x::Ellipsoid) = (4π/3) * x.a * x.b * x.c
+volume(x::TriaxialEllipsoid) = (4π/3) * x.a * x.b * x.c
 volume(x::Spheroid) = (4π/3) * x.equatorial_radius^2 * x.polar_radius
 volume(x::Sphere) = (4π/3) * x.radius
 volume(x::SphericalShell) = spherical_shell_volume(x.r_inner, x.r_outer)
@@ -78,11 +87,11 @@ volume(x::Cylinder) = cylinder_volume(x.length, x.radius)
 volume(x::Cuboid) = x.length * x.width * x.height
 
 """
-    radius(x::Ellipsoid)
+    radius(x::TriaxialEllipsoid)
 	
 Returns the mean radius of `x`.
 """
-radius(x::Ellipsoid) = (x.a + x.b + x.c) / 3
+radius(x::TriaxialEllipsoid) = (x.a + x.b + x.c) / 3
 
 """
     radius(x::Spheroid)
@@ -113,21 +122,21 @@ The outer radius of `x`.
 radius(x::SphericalShell) = x.r_outer
 
 """
-    equatorial_radius(x::AbstractEllipsoid)
+    equatorial_radius(x::Ellipsoid)
 	
-Not defined for triaxial ellipsoids. Equivalent to the radius for spheres.
+Not defined for triaxial TriaxialEllipsoids. Equivalent to the radius for spheres.
 """
-equatorial_radius(x::AbstractEllipsoid) = error("Equatorial radius not well defined for general ellipsoids.")
+equatorial_radius(x::Ellipsoid) = error("Equatorial radius not well defined for general TriaxialEllipsoids.")
 equatorial_radius(x::Sphere) = x.radius
 equatorial_radius(x::SphericalShell) = x.outer_radius
 equatorial_radius(x::Spheroid) = x.equatorial_radius
 
 """
-    polar_radius(x::AbstractEllipsoid)
+    polar_radius(x::Ellipsoid)
 	
-Not defined for triaxial ellipsoids. Equivalent to the radius for spheres.
+Not defined for triaxial TriaxialEllipsoids. Equivalent to the radius for spheres.
 """
-polar_radius(x::AbstractEllipsoid) = error("Polar radius not well defined for general ellipsoids.")
+polar_radius(x::Ellipsoid) = error("Polar radius not well defined for general TriaxialEllipsoids.")
 polar_radius(x::Sphere) = x.radius
 polar_radius(x::SphericalShell) = x.outer_radius
 polar_radius(x::Spheroid) = x.polar_radius
@@ -150,7 +159,7 @@ function area(x::Spheroid)
 	end
 end
 
-area(x::Ellipsoid) = error("Surface area of a triaxial ellipsoid not yet implemented")
+area(x::TriaxialEllipsoid) = error("Surface area of a triaxial TriaxialEllipsoid not yet implemented")
 
 """
     area(x::Cuboid)
@@ -183,22 +192,22 @@ Return the length of `x`.
 length(x::Cylinder) = x.length
 
 """
-    length(x::AbstractEllipsoid)
+    length(x::Ellipsoid)
 	
 The diameter of `x` across its widest part.
 """
-length(x::AbstractEllipsoid) = max(equatorial_radius(x), polar_radius(x)) * 2
-length(x::Ellipsoid) = max(x.a, x.b, x.c) * 2
+length(x::Ellipsoid) = max(equatorial_radius(x), polar_radius(x)) * 2
+length(x::TriaxialEllipsoid) = max(x.a, x.b, x.c) * 2
 
 """
-    cross_sectional_area(x::AbstractEllipsoid)
+    cross_sectional_area(x::Ellipsoid)
 	
 The area of the largest cross-section of `x` in the coronal plane.
 
-Not defined for triaxial ellipsoids.
+Not defined for triaxial TriaxialEllipsoids.
 """
-cross_sectional_area(x::AbstractEllipsoid) = equatorial_radius(x) * polar_radius(x) * π
-cross_sectional_area(::Ellipsoid) = error("Cross section not well defined for triaxial ellipsoids")
+cross_sectional_area(x::Ellipsoid) = equatorial_radius(x) * polar_radius(x) * π
+cross_sectional_area(::TriaxialEllipsoid) = error("Cross section not well defined for triaxial TriaxialEllipsoids")
 
 """
     spherical_cap_solid_angle(θ)
