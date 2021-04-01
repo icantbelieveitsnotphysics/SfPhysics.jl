@@ -9,7 +9,7 @@ export Shape, Ellipsoid, TriaxialEllipsoid, Spheroid, Sphere, SphericalShell, Cy
 export volume, radius, area, length
 export unit_x, unit_y, unit_z, sphere_volume, sphere_radius, cylinder_volume, cylinder_radius, cylinder_length, 
 	spherical_cap_solid_angle, is_sphere, is_spheroid, is_triaxial, equatorial_radius, polar_radius, 
-	cross_sectional_area, spherical_shell_volume, spherical_shell_thickness
+	cross_sectional_area, spherical_shell_volume, spherical_shell_thickness, shape
 	
 const unit_x = [1, 0, 0]
 const unit_y = [0, 1, 0]
@@ -23,6 +23,9 @@ cylinder_radius(v::Unitful.Volume, h::Unitful.Length) = sqrt(v / (π * h))
 cylinder_length(v::Unitful.Volume, r::Unitful.Length) = v / (π * r^2)
 
 abstract type Shape end
+
+shape(x::Shape) = x
+
 abstract type Ellipsoid <: Shape end
 
 struct TriaxialEllipsoid <: Ellipsoid

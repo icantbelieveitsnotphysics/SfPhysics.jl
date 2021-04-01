@@ -3,7 +3,7 @@ module SfObjects
 using Unitful, ..SfGeometry, ..SfMatter
 
 import ..SfMatter: mass, density, bouyancy
-import ..SfGeometry: radius, volume, area
+import ..SfGeometry: radius, volume, area, shape
 
 export Object
 export mass, bouyancy, area, volume, radius, sphere_of, cube_of
@@ -12,6 +12,8 @@ struct Object
 	shape::Shape
 	material::Material
 end
+
+shape(object::Object) = object.shape
 
 radius(object::Object) = radius(object.shape)
 area(object::Object) = area(object.shape)
@@ -22,32 +24,19 @@ density(object::Object) = density(object.material)
 mass(object::Object) = mass(object.material, object.shape)
 
 """
-    mass(m::Material, s::Shape)
+    mass(x, s::Shape)
 	
-Calculate the mass of an object with shape `s` made of material `m`.
+Calculate the mass of an object with shape `s` made of `x`, which must have [`density`](@ref)
 """
-mass(m::Material, s::Shape) = density(m) * volume(s) |> u"kg"
+mass(x, s::Shape) = density(m) * volume(s) |> u"kg"
 
 """
-    mass(d::Unitful.Density, s::Shape)
+    bouyancy(s::Shape, fluid; g = g_n)
 	
-Calculate the mass of an object with shape `s` made of a material with density `d`.
+Bouyancy force felt by an object of shape `s` in a medium made of `fluid` (which must have [`density`](@ref)),
+undergoing acceleration `g` (which defaults to Earth gravity).
 """
-mass(d::Unitful.Density, s::Shape) = d * volume(s) |> u"kg"
-
-"""
-    bouyancy(s::Shape, ρ_fluid::Unitful.Density; g = g_n)
-	
-Bouyancy force felt by an object of shape `s` in a fluid of density `ρ_fluid`, undergoing acceleration `g` (which defaults to Earth gravity).
-"""
-bouyancy(s::Shape, ρ_fluid::Unitful.Density; g = g_n) = bouyancy(volume(s), ρ_fluid, g)
-
-"""
-    bouyancy(s::Shape, ρ_fluid::Unitful.Density; g = g_n)
-	
-Bouyancy force felt by an object of shape `s` in a medium made of `fluid`, undergoing acceleration `g` (which defaults to Earth gravity).
-"""
-bouyancy(s::Shape, fluid::Material; g = g_n) = bouyancy(volume(s), density(fluid), g)
+bouyancy(s::Shape, fluid; g = g_n) = bouyancy(volume(s), density(fluid), g)
 
 """
 	sphere_of(material::Material, m::Unitful.Mass)

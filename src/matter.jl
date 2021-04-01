@@ -18,8 +18,9 @@ Material(density::Unitful.Density) = Material(density, missing)
 mass(::Nothing) = nothing
 
 density(x) = mass(x) / volume(x) |> u"kg/m^3"
-
+density(x::Unitful.Density) = x
 density(m::Material) = m.density
+
 yield_strength(m::Material) = m.yield_strength
 
 """

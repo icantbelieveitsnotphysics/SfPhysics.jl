@@ -138,7 +138,7 @@ import ..SfGravity: gravity, planetary_mass, planetary_radius, orbital_period, o
 import ..SfRelativity: relativistic_kinetic_energy
 import ..SfPhysics: kinetic_energy
 import ..SfMatter: density, mass
-import ..SfGeometry: spherical_cap_solid_angle, volume, radius, equatorial_radius, polar_radius, area, cross_sectional_area
+import ..SfGeometry: spherical_cap_solid_angle, volume, radius, equatorial_radius, polar_radius, area, cross_sectional_area, shape
 import ..SfAstronomy: absolute_magnitude, apparent_magnitude, diffuse_sphere_q
 
 import PhysicalConstants.CODATA2018: σ, G, k_B # σ = Stefan-Boltzmann constant, k_B Boltzmann constant
@@ -148,6 +148,13 @@ export gravity, orbital_period, orbital_radius, orbital_velocity, escape_velocit
 	jeans_escape_timescale, jeans_parameter, gravitational_binding_energy, roche_limit, volume, density, radius, equatorial_radius,
 	area, cross_sectional_area, absolute_magnitude, apparent_magnitude, star, stellar_distance
 
+"""
+    shape(body::AbstractBody)
+	
+The shape of `body`, generally some kind of [`Ellipsoid`](@ref).
+"""
+shape(body::AbstractBody) = body.shape
+	
 """
 	gravity(body::AbstractBody)
 	
@@ -325,7 +332,7 @@ mass(body::AbstractBody) = body.mass
 """
     star(body::AbstractBody)
 	
-Recuse upwards through the hierarchy of orbits to find the star that `body` ultimately orbits. If there is no parent star, `nothing` is returned.
+Recuse upwards through the hierarchy of orbits to find the [`Star`](@ref) that `body` ultimately orbits. If there is no parent star, `nothing` is returned.
 """
 function star(body::AbstractBody)
 	if typeof(body) == Star
