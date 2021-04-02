@@ -16,6 +16,7 @@ const unit_y = [0, 1, 0]
 const unit_z = [0, 0, 1]
 
 sphere_volume(r::Unitful.Length) = (4π/3)r^3
+sphere_area(r::Unitful.Length) = 4π * r^2
 sphere_radius(v::Unitful.Volume) = cbrt(3v / 4π)
 
 cylinder_volume(r::Unitful.Length, h::Unitful.Length) = π * r^2 * h
@@ -85,7 +86,7 @@ SphericalShell(s1::Sphere, s2::Sphere) = SphericalShell(min(radius(s1), radius(s
 
 volume(x::TriaxialEllipsoid) = (4π/3) * x.a * x.b * x.c
 volume(x::Spheroid) = (4π/3) * x.equatorial_radius^2 * x.polar_radius
-volume(x::Sphere) = (4π/3) * x.radius
+volume(x::Sphere) = (4π/3) * x.radius^3
 volume(x::SphericalShell) = spherical_shell_volume(x.r_inner, x.r_outer)
 volume(x::Cylinder) = cylinder_volume(x.length, x.radius)
 volume(x::Cuboid) = x.length * x.width * x.height
@@ -152,7 +153,9 @@ function area(x::Spheroid)
 	eq = equatorial_radius(x)
 	po = polar_radius(x)
 	
-	if eq > po
+	if eq == po
+		return sphere_area(eq)
+	elseif eq > po
 		# oblate
 		e = sqrt(1 - po^2 / eq^2)
 		return 2π * eq^2 * (1 + (po^2 / (e * eq^2)) * atanh(e))
@@ -166,8 +169,18 @@ end
 function area(x::TriaxialEllipsoid)
 	# sort axes ascending
 	c, b, a = sort([x.a, x.b, x.c])
+	
+	if a == b == c
+		return sphere_area(a)
+	elseif a == b
+		return area(Spheroid(a, c))
+	elseif a == c
+		return area(Spheroid(a, b))
+	elseif b == c
+		return area(Spheroid(b, a))
+	end
 
-	cos_ϕ = x.c / x.a
+	cos_ϕ = c / a
 	ϕ = acos(cos_ϕ)
 	sin_ϕ = sin(ϕ)
 	

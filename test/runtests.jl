@@ -68,8 +68,28 @@ import PhysicalConstants.CODATA2018: g_n, c_0
 		@test lorentz_velocity(lorentz_factor(.95c_0)) ≈ .95c_0
 	end
 	
-	@testset "SfRocketry" begin
-	
+	@testset "SfGeometry" begin
+		@test radius(Sphere(1u"m")) == 1u"m"
+		@test equatorial_radius(Sphere(1u"m")) == 1u"m"
+		@test polar_radius(Sphere(1u"m")) == 1u"m"
+		@test area(Sphere(1u"m")) == 4π * u"m^2"
+		@test volume(Sphere(1u"m")) == (4π / 3) * u"m^3"
+		@test cross_sectional_area(Sphere(1u"m")) ≈ π * u"m^2"
+		
+		@test radius(Spheroid(1u"m", 1u"m")) == 1u"m"
+		@test equatorial_radius(Spheroid(2u"m", 1u"m")) == 2u"m"
+		@test polar_radius(Spheroid(2u"m", 1u"m")) == 1u"m"
+		@test area(Spheroid(1u"m", 1u"m")) == 4π * u"m^2"
+		@test area(Spheroid(1.01u"m", 1u"m")) ≈ 4π * u"m^2" atol=0.2u"m^2" # weirdly poor tolerances here, code needs checking
+		@test area(Spheroid(1u"m", 1.01u"m")) ≈ 4π * u"m^2" atol=0.2u"m^2"
+		@test volume(Spheroid(1u"m", 1u"m")) == (4π / 3) * u"m^3"
+		@test cross_sectional_area(Spheroid(1u"m", 1u"m")) ≈ π * u"m^2"
+		
+		@test radius(TriaxialEllipsoid(1u"m", 1u"m", 1u"m")) == 1u"m"
+		@test area(TriaxialEllipsoid(1u"m", 1u"m", 1u"m")) == 4π * u"m^2"
+		@test area(TriaxialEllipsoid(1u"m", 1.001u"m", 1.001u"m")) ≈ 4π * u"m^2" atol=0.05u"m^2"
+		@test area(TriaxialEllipsoid(1u"m", 1.001u"m", 1.002u"m")) ≈ 4π * u"m^2" atol=0.05u"m^2"
+		@test volume(TriaxialEllipsoid(1u"m", 1u"m", 1u"m")) == (4π / 3) * u"m^3"
 	end
 	
 	@testset "SfAstronomy" begin
@@ -83,10 +103,10 @@ import PhysicalConstants.CODATA2018: g_n, c_0
 		@test diffuse_sphere_q(deg2rad(90)) ≈ 2/3π atol = 0.000000000000001 # weird difference in last decimal place under test
 		@test diffuse_sphere_q(deg2rad(180)) ≈ 0.0 atol = eps(Float64)
 		
-		@test absolute_magnitude(1000u"m", 1) = absolute_magnitude(10000u"m", 1) + 5
+		@test absolute_magnitude(1000u"m", 1) == absolute_magnitude(10000u"m", 1) + 5
 		@test absolute_magnitude(6.9173e7u"m", 0.538) ≈ -9.4 atol = 0.1 # jupiter	
 
-		@test apparent_magnitude(0, 1u"AU", 1u"AU", 1u"AU", 1) = 0.0
-		@test apparent_magnitude(0, 1u"AU", 1u"AU", 1u"AU", 0.01) = apparent_magnitude(0, 1u"AU", 1u"AU", 1u"AU", 0.1)
+		@test apparent_magnitude(0, 1u"AU", 1u"AU", 1u"AU", 1) == 0.0
+		@test apparent_magnitude(0, 1u"AU", 1u"AU", 1u"AU", 0.01) == 2apparent_magnitude(0, 1u"AU", 1u"AU", 1u"AU", 0.1)
 	end
 end
