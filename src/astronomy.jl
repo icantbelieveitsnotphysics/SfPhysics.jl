@@ -21,14 +21,16 @@ end
 	
 Approximate phase integral of an ideal diffuse reflecting sphere for observer angle `α`.
 """
-diffuse_sphere_q(α::Angle) = (2/3) * ((1 - (α / 180u"°")) * cos(α) + (1/π) * sin(α))
+diffuse_sphere_q(α) = (2/3) * ((1 - (α / 180u"°")) * cos(α) + (1/π) * sin(α))
 
 """
 	diffuse_disc_q(α::Angle)
 	
 Phase integral of a diffuse reflecting disc for observer angle `α`.
+
+Value will be ≥ 0 and ≤ 1
 """
-diffuse_disc_q(α::Angle) = cos(α)
+diffuse_disc_q(α) = abs(cos(α))
 
 """
 	apparent_magnitude(h::Real, d_bs::Unitful.Length, d_bo::Unitful.Length, d_os::Unitful.Length, q_α::Real)

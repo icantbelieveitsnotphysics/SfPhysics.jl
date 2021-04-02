@@ -71,4 +71,22 @@ import PhysicalConstants.CODATA2018: g_n, c_0
 	@testset "SfRocketry" begin
 	
 	end
+	
+	@testset "SfAstronomy" begin
+		@test diffuse_disc_q(0) == 1.0
+		@test diffuse_disc_q(deg2rad(45)) == sqrt(2) / 2
+		@test diffuse_disc_q(deg2rad(90)) ≈ 0.0 atol = eps(Float64)
+		@test diffuse_disc_q(deg2rad(180)) == 1.0
+		
+		@test diffuse_sphere_q(0) == 2/3
+		@test diffuse_sphere_q(deg2rad(45)) == 2/3 * (3sqrt(2)/8 + sqrt(2)/2π)
+		@test diffuse_sphere_q(deg2rad(90)) ≈ 2/3π atol = 0.000000000000001 # weird difference in last decimal place under test
+		@test diffuse_sphere_q(deg2rad(180)) ≈ 0.0 atol = eps(Float64)
+		
+		@test absolute_magnitude(1000u"m", 1) = absolute_magnitude(10000u"m", 1) + 5
+		@test absolute_magnitude(6.9173e7u"m", 0.538) ≈ -9.4 atol = 0.1 # jupiter	
+
+		@test apparent_magnitude(0, 1u"AU", 1u"AU", 1u"AU", 1) = 0.0
+		@test apparent_magnitude(0, 1u"AU", 1u"AU", 1u"AU", 0.01) = apparent_magnitude(0, 1u"AU", 1u"AU", 1u"AU", 0.1)
+	end
 end
