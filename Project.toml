@@ -16,6 +16,7 @@ UnitfulAstro = "6112ee07-acf9-5e0f-b108-d242c714bf9f"
 
 [compat]
 Documenter = "0.26"
+Elliptic = "1.0"
 Measurements = "2.5"
 PhysicalConstants = "0.2"
 Reexport = "1.0"
