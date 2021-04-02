@@ -297,9 +297,9 @@ cross_sectional_area(body::AbstractBody) = cross_sectional_area(body.shape) |> u
 """
     radius(body::AbstractBody)
 	
-Returns the equatorial radius of `body` when it is spheroidal, or its average radius if it is ellipsoidal.
+Mean radius of `body`.
 """
-radius(body::AbstractBody) = is_triaxial(body.shape) ? radius(body.shape) : equatorial_radius(body.shape)
+radius(body::AbstractBody) = radius(body.shape)
 
 """
     equatorial_radius(body::AbstractBody)
@@ -329,20 +329,16 @@ Return the mass of `body`.
 """
 mass(body::AbstractBody) = body.mass
 
+star(::Star) = s
+
 """
     star(body::AbstractBody)
 	
 Recuse upwards through the hierarchy of orbits to find the [`Star`](@ref) that `body` ultimately orbits. If there is no parent star, `nothing` is returned.
 """
-function star(body::AbstractBody)
-	if typeof(body) == Star
-		return star
-	elseif body.orbit == nothing
-		return nothing
-	else
-		return star(body.orbit.parent)
-	end
-end
+star(body::AbstractBody) = body.orbit == nothing ? nothing : star(body.orbit.parent)
+
+stellar_distance(::Star) = 0u"AU"
 
 """
 	stellar_distance(body::AbstractBody)
@@ -352,9 +348,7 @@ Returns the approximate average distance of `body` to its parent star, if any. I
 This returns the average radius of the top-level orbit, and so is only a loose approximation for eccentric.
 """
 function stellar_distance(body::AbstractBody)
-	if typeof(body) == Star
-		return 0u"AU"
-	elseif body.orbit == nothing
+	if body.orbit == nothing
 		error("Body does not ultimately orbit a star")
 	elseif typeof(body.orbit.parent) == Star
 		return radius(body.orbit)
