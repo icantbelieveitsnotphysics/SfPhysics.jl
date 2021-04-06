@@ -109,4 +109,12 @@ import PhysicalConstants.CODATA2018: g_n, c_0
 		@test apparent_magnitude(0, 1u"AU", 1u"AU", 1u"AU", 1) == 0.0
 		@test apparent_magnitude(0, 1u"AU", 1u"AU", 1u"AU", 0.01) == 2apparent_magnitude(0, 1u"AU", 1u"AU", 1u"AU", 0.1)
 	end
+	
+	@testset "SfMatter" begin
+		@test bouyancy(1u"kg/m^3", 1u"kg/m^3"; g = g_n) == g_n
+		@test bouyancy(1u"kg/m^3", 2u"kg/m^3"; g = g_n) == 2g_n
+		@test bouyancy(2u"kg/m^3", 1u"kg/m^3"; g = g_n) == g_n / 2
+		
+		@test compression_energy(1u"mol", 1u"K", 1u"m^3", 1u"m^3") == 0.0u"J"
+	end
 end
