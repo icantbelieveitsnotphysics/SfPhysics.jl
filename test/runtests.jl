@@ -31,9 +31,7 @@ import PhysicalConstants.CODATA2018: g_n, c_0, m_p
 		@test duration(10u"m/s^2", 10u"m", 10u"m/s") ≈ 0.7320508075688774u"s"
 		@test_throws DomainError duration(10u"m/s^2", -10u"m", 10u"m/s")
 		@test_throws DomainError duration(0u"m/s^2", 10u"m", -10u"m/s")
-	end
-	
-	@testset "kinetics.jl" begin
+		
 		@test kinetic_energy(0u"kg", 1u"m/s") == 0u"J"
 		@test kinetic_energy(1u"kg", 0u"m/s") == 0u"J"
 		@test kinetic_energy(2u"kg", 1u"m/s") == 1u"J"
