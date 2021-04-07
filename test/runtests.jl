@@ -88,6 +88,13 @@ import PhysicalConstants.CODATA2018: g_n, c_0, m_p
 		@test area(TriaxialEllipsoid(1u"m", 1.001u"m", 1.001u"m")) ≈ 4π * u"m^2" atol=0.05u"m^2"
 		@test area(TriaxialEllipsoid(1u"m", 1.001u"m", 1.002u"m")) ≈ 4π * u"m^2" atol=0.05u"m^2"
 		@test volume(TriaxialEllipsoid(1u"m", 1u"m", 1u"m")) == (4π / 3) * u"m^3"
+		
+		@test Cube(1u"m") == Cuboid(1u"m", 1u"m", 1u"m")
+		
+		@test area(Cube(1u"m")) == 6u"m^2"
+		@test volume(Cube(1u"m")) == 1u"m^3"
+	 	@test area(Cube(1u"m^3")) == 6u"m^2"
+		@test volume(Cube(1u"m^3")) == 1u"m^3"
 	end
 	
 	@testset "SfAstronomy" begin
