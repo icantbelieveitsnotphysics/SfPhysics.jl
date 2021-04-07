@@ -13,6 +13,7 @@ const AngularVelocity{T, U} = Unitful.AbstractQuantity{T, Unitful.𝐓 ^-1, U}
 const AngularMomentum{T, U} = Unitful.AbstractQuantity{T, Unitful.𝐋^2 * Unitful.𝐌 * Unitful.𝐓 ^-1, U}
 const Acceleration{T, U} = Unitful.AbstractQuantity{T,Unitful.𝐋*Unitful.𝐓^-2, U}
 const Speed{T, U} = Unitful.AbstractQuantity{T,Unitful.𝐋*Unitful.𝐓^-1, U}
+const Mass{T, U} = Unitful.AbstractQuantity{T,Unitful.𝐌, U}
 
 const Angle{T} = Union{ Quantity{T, NoDims, typeof(u"°")}, Quantity{T, NoDims, typeof(u"rad")} }
 	

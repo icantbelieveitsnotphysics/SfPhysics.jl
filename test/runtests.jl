@@ -2,14 +2,10 @@ using SfPhysics
 using Test
 
 using Unitful, UnitfulAstro, Documenter
-import PhysicalConstants.CODATA2018: g_n, c_0
+import PhysicalConstants.CODATA2018: g_n, c_0, m_p
 
 @testset "SfPhysics.jl" begin
-	@testset "Documentation" begin
-		doctest(SfPhysics; manual=false)
-	end
-
-    @testset "SfGravity" begin
+	@testset "SfGravity" begin
 		# for reasons I'm too lazy to establish, there's a bit of a margin of error here. pretty small though.
 		@test gravity(1u"Mearth", 1u"Rearth") ≈ g_n atol = 0.01u"m/s^2"
 		@test planetary_mass(g_n |> u"m/s^2", 1u"Rearth") ≈ 1u"Mearth" atol=0.01e24u"kg"
@@ -66,6 +62,8 @@ import PhysicalConstants.CODATA2018: g_n, c_0
 		
 		@test lorentz_velocity(lorentz_factor(.05c_0)) ≈ .05c_0
 		@test lorentz_velocity(lorentz_factor(.95c_0)) ≈ .95c_0
+		
+		@test relativistic_kinetic_energy(m_p, relativistic_velocity(m_p, 100u"MeV")) ≈ 100u"MeV" atol = 1u"μeV"
 	end
 	
 	@testset "SfGeometry" begin
@@ -116,5 +114,9 @@ import PhysicalConstants.CODATA2018: g_n, c_0
 		@test bouyancy(2u"kg/m^3", 1u"kg/m^3"; g = g_n) == g_n / 2
 		
 		@test compression_energy(1u"mol", 1u"K", 1u"m^3", 1u"m^3") == 0.0u"J"
+	end
+	
+	@testset "Documentation" begin
+		doctest(SfPhysics; manual=false)
 	end
 end
