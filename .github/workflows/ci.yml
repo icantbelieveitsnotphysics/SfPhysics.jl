@@ -6,16 +6,18 @@ jobs:
   test:
     name: Julia ${{ matrix.version }} - ${{ matrix.os }} - ${{ matrix.arch }} - ${{ github.event_name }}
     runs-on: ${{ matrix.os }}
+    env:
+        UNITFUL_FANCY_EXPONENTS: false
     strategy:
       fail-fast: false
       matrix:
         version:
           - '1.4'
-          - '1.5'
+          - '1.6'
           - 'nightly'
         os:
           - ubuntu-latest
-          # - macOS-latest # disable due to issues with doctest and unitful prettyprinting.
+          - macOS-latest
           - windows-latest
         arch:
           - x64
