@@ -116,6 +116,21 @@ import PhysicalConstants.CODATA2018: g_n, c_0, m_p
 		@test compression_energy(1u"mol", 1u"K", 1u"m^3", 1u"m^3") == 0.0u"J"
 	end
 	
+	@testset "Units" begin
+		import SfPhysics.SfUnits: to_angle
+	
+		@test to_angle(90) == 90u"°"
+		@test to_angle(90u"°") == 90u"°"
+		@test to_angle((π / 2) * u"rad") == 90u"°"
+		@test unit(to_angle((π / 2) * u"rad")) == u"rad"
+		@test to_angle(missing) === missing
+		@test to_angle(nothing) == nothing
+		
+		@test 1e20u"W" |> kardashev |> kardashev == 1e20u"W"
+		
+		@test tnt(1e9u"J") |> u"J" ≈ 1e9u"J"
+	end
+	
 	@testset "Documentation" begin
 		doctest(SfPhysics; manual=false)
 	end
