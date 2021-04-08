@@ -133,7 +133,7 @@ Not defined for triaxial TriaxialEllipsoids. Equivalent to the radius for sphere
 """
 equatorial_radius(x::Ellipsoid) = error("Equatorial radius not well defined for general TriaxialEllipsoids.")
 equatorial_radius(x::Sphere) = x.radius
-equatorial_radius(x::SphericalShell) = x.outer_radius
+equatorial_radius(x::SphericalShell) = x.r_outer
 equatorial_radius(x::Spheroid) = x.equatorial_radius
 
 """
@@ -143,11 +143,11 @@ Not defined for triaxial TriaxialEllipsoids. Equivalent to the radius for sphere
 """
 polar_radius(x::Ellipsoid) = error("Polar radius not well defined for general TriaxialEllipsoids.")
 polar_radius(x::Sphere) = x.radius
-polar_radius(x::SphericalShell) = x.outer_radius
+polar_radius(x::SphericalShell) = x.r_outer
 polar_radius(x::Spheroid) = x.polar_radius
 
 area(x::Sphere) = 4π * x.radius^2
-area(x::SphericalShell) = 4π * x.outer_radius^2
+area(x::SphericalShell) = 4π * x.r_outer^2
 
 function area(x::Spheroid)
 	eq = equatorial_radius(x)
@@ -204,7 +204,7 @@ area(x::Cuboid) = 2 * (x.width * x.length) + 2 * (x.width * x.height) + 2 * (x.h
 	
 Returns the surface area of `x`, including endcaps.
 """
-area(x::Cylinder) = 2π * x.radius * x.height + 2π * radius^2
+area(x::Cylinder) = 2π * x.radius * x.length + 2π * x.radius^2
 
 """
 	length(x::Cuboid)
@@ -254,7 +254,7 @@ spherical_cap_solid_angle(θ) = 2π * (1 - cos(θ)) * u"sr"
 	
 Compute the solid angle of a cone with its apex at the apex of the solid angle, height `h_cone` and radius `r_cone`.
 """
-spherical_cap_solid_angle(h_cone::Unitful.Length, r_cone::Unitful.Length) = spherical_cap_solid_angle(atan(r_cone, h_cone) |> u"m/m")
+spherical_cap_solid_angle(h_cone::Unitful.Length, r_cone::Unitful.Length) = spherical_cap_solid_angle(atan(r_cone, h_cone))
 
 """
     spherical_shell_volume(r1::Unitful.Length, r2::Unitful.Length)

@@ -93,6 +93,21 @@ import PhysicalConstants.CODATA2018: g_n, c_0, m_p
 		@test volume(Cube(1u"m")) == 1u"m^3"
 	 	@test area(Cube(1u"m^3")) == 6u"m^2"
 		@test volume(Cube(1u"m^3")) == 1u"m^3"
+		
+		@test radius(Cylinder(1u"m", 1u"m")) == 1u"m"
+		@test length(Cylinder(1u"m", 1u"m")) == 1u"m"
+		@test area(Cylinder(1u"m", 1u"m")) == 4π * u"m^2"
+		@test volume(Cylinder(1u"m", 1u"m")) ≈ π * u"m^3"
+		
+		@test radius(SphericalShell(0u"m", 1u"m")) == 1u"m"
+		@test area(SphericalShell(0u"m", 1u"m")) == area(Sphere(1u"m"))
+		@test volume(SphericalShell(0u"m", 1u"m")) == volume(Sphere(1u"m"))
+		@test volume(SphericalShell(1u"m", 1u"m")) == 0u"m^3"
+		@test volume(SphericalShell(1u"m", 2u"m")) == volume(Sphere(2u"m")) - volume(Sphere(1u"m"))
+		
+		@test spherical_cap_solid_angle(0u"°") == 0u"sr"
+		@test spherical_cap_solid_angle(180u"°") == 4π * u"sr"
+		@test spherical_cap_solid_angle(0u"m", 2u"m") ≈ 2π * u"sr"
 	end
 	
 	@testset "SfAstronomy" begin
