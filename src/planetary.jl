@@ -329,7 +329,7 @@ Return the mass of `body`.
 """
 mass(body::AbstractBody) = body.mass
 
-star(::Star) = s
+star(s::Star) = s
 
 """
     star(body::AbstractBody)
@@ -401,7 +401,7 @@ function stellar_irradiance(body::AbstractBody)
 		error("Body does not ultimately orbit a star")
 	end
 	
-	return stellar_irradiance(stellar_luminosity(s), orbit.semi_major_axis, radius(body))
+	return stellar_irradiance(stellar_luminosity(s), orbital_radius(body), radius(body))
 end
 
 """

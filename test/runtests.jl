@@ -42,15 +42,39 @@ import PhysicalConstants.CODATA2018: g_n, c_0, m_p
 	@testset "SfPlanetary" begin
 		s = SfSolarSystem
 		
-		@test gravity(s.earth) ≈ g_n atol = 0.01u"m/s^2"
 		@test planetary_mass(s.earth) == 1u"Mearth"
-		@test planetary_radius(s.earth) == 1u"Rearth_e"
-		@test orbital_period(s.earth) ≈ 365.25u"d" atol = 0.01u"d"
-		@test orbital_velocity(s.earth) ≈ 29.78u"km/s" atol = 0.01u"km/s"	
+		@test mass(s.earth) == planetary_mass(s.earth)
+		
+		@test gravity(s.earth) ≈ g_n atol = 0.01u"m/s^2"
 		@test escape_velocity(s.earth) ≈ 11.186u"km/s" atol = 0.01u"km/s"
+		
+		@test planetary_radius(s.earth) == 1u"Rearth_e"
+		@test equatorial_radius(s.earth) == 1u"Rearth_e"
+		@test polar_radius(s.earth) == 1u"Rearth_p"
+		@test radius(s.earth) ≈ 1u"Rearth" atol = 2e4u"m"
+		
+		@test orbital_period(s.earth) ≈ 365.25u"d" atol = 0.01u"d"
+		@test orbital_velocity(s.earth) ≈ 29.78u"km/s" atol = 0.01u"km/s"
+		@test orbital_radius(s.earth) ≈ 1u"AU" atol = 0.00001u"AU"
+				
+		@test orbital_period(s.earth.orbit) == orbital_period(s.earth)	
+		@test orbital_velocity(s.earth.orbit) == orbital_velocity(s.earth)
+		@test orbital_radius(s.earth) == radius(s.earth.orbit)
 		
 		@test hill_sphere(s.earth) > orbital_radius(s.moon)
 		@test hill_sphere(s.earth.orbit, s.moon.mass) < orbital_radius(s.moon)
+		
+		@test star(s.sol) == s.sol
+		@test star(s.earth) == s.sol
+		@test star(s.moon) == s.sol
+		
+		@test stellar_distance(s.sol) == 0u"AU"
+		@test stellar_distance(s.earth) == orbital_radius(s.earth)
+		@test stellar_distance(s.moon) == orbital_radius(s.earth)
+		
+		@test planetary_equilibrium_temperature(s.earth) ≈ 255u"K" atol = 1u"K"
+		
+		@test absolute_magnitude(s.jupiter) ≈ -9.4 atol = 0.05
 	end
 	
 	@testset "SfRelativity" begin
