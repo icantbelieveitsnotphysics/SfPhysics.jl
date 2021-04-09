@@ -175,6 +175,29 @@ import PhysicalConstants.CODATA2018: g_n, c_0, m_p
 		@test tnt(1e9u"J") |> u"J" ≈ 1e9u"J"
 	end
 	
+	@testset "SfCoriolis" begin
+		@test coriolis_acceleration(0.001u"rad/s" * unit_y, 400u"m/s" * unit_x)[3] == -0.8u"m/s/s"
+		@test coriolis_force(1u"kg", 0.001u"rad/s" * unit_y, 400u"m/s" * unit_x)[3] == -0.8u"N"
+		
+		@test tangential_velocity(1u"rad/s", 1u"m") == 1u"m/s"
+		@test tangential_velocity(1u"rad/s", 1u"m", 0u"°") == 1u"m/s"
+		@test tangential_velocity(1u"rad/s", 1u"m", 90u"°") == 0u"m/s"
+		@test tangential_velocity(1u"rad/s", 1u"m", 45u"°") == cosd(45) * u"m/s"
+		
+		@test centrifugal_acceleration(1u"rad/s", 0u"m") == 0u"m/s/s"
+		@test centrifugal_acceleration(1u"rad/s", 1u"m") == 1u"m/s/s"
+		@test centrifugal_acceleration(1u"rad/s", 2u"m") == 2u"m/s/s"
+		@test centrifugal_acceleration(2u"rad/s", 1u"m") == 4u"m/s/s"
+		
+		@test angular_velocity(1u"m/s/s", 1u"m") == 1u"rad/s"
+		@test radius(1u"rad/s", 1u"m/s/s") == 1u"m"
+		
+		@test angular_momentum(1u"kg", 1u"rad/s", 1u"m") == 1u"kg*m^2/s"
+		@test angular_momentum(2u"kg", 1u"rad/s", 1u"m") == 2u"kg*m^2/s"
+		@test angular_momentum(1u"kg", 2u"rad/s", 1u"m") == 2u"kg*m^2/s"
+		@test angular_momentum(1u"kg", 1u"rad/s", 2u"m") == 4u"kg*m^2/s"
+	end
+	
 	@testset "Documentation" begin
 		doctest(SfPhysics; manual=false)
 	end

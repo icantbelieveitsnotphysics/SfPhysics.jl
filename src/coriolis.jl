@@ -36,7 +36,7 @@ coriolis_acceleration(Ω::Vector, v::Vector) = upreferred.(2cross(Ω, v))
 The strength of the coriolis force apparently acting on an object with mass `m` moving with velolcity
 vector `v` in a rotating reference frame with angular velocity vector `Ω`.
 """
-coriolis_force(m::Unitful.Mass, Ω::Vector, v::Vector) = mass * coriolis_force(Ω, v)
+coriolis_force(m::Unitful.Mass, Ω::Vector, v::Vector) = m * coriolis_acceleration(Ω, v)
 
 """
     tangential_velocity(ω::AngularVelocity, r::Unitful.Length)
