@@ -167,13 +167,6 @@ planetary_mass(sma::Unitful.Length, orbital_period::Unitful.Time) = (4π^2 * sma
 Calculate the velocity required to escape a body with mass `m` from distance `r`.
 """
 escape_velocity(m::Unitful.Mass, r::Unitful.Length) = sqrt(2G * m / r) |> u"km/s"
-	
-"""
-	planetary_mass(r::Unitful.Length, v_esc::Unitful.Velocity)
-	
-Calculate the mass of a body with escape velocity `v_esc` at distance `r`.
-"""
-planetary_mass(r::Unitful.Length, v_esc::Unitful.Velocity) = v_esc^2 * r / 2G |> u"kg"
 
 """
 	hill_sphere(m_parent::Unitful.Mass, m::Unitful.Mass, sma::Unitful.Length, e = 0)
@@ -191,7 +184,7 @@ end
 """
 	gravitational_binding_energy(m::Unitful.Mass, r::Unitful.Length)
 	
-Calculate the gravitational binding energy of a body with mass `m` and radius `r`.
+Approximate the gravitational binding energy of a body with mass `m` and radius `r`.
 
 ``E_g = \\frac{3Gm^2}{5r}``
 """

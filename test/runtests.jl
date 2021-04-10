@@ -6,18 +6,36 @@ import PhysicalConstants.CODATA2018: g_n, c_0, m_p
 
 @testset "SfPhysics.jl" begin
 	@testset "SfGravity" begin
+		@test sqrt(vis_viva(1u"Msun", 1u"AU", 1u"AU")) ≈ orbital_velocity(1u"Msun", 1u"AU")
+		
 		# for reasons I'm too lazy to establish, there's a bit of a margin of error here. pretty small though.
 		@test gravity(1u"Mearth", 1u"Rearth") ≈ g_n atol = 0.01u"m/s^2"
-		@test planetary_mass(g_n |> u"m/s^2", 1u"Rearth") ≈ 1u"Mearth" atol=0.01e24u"kg"
-		@test planetary_radius(1u"Mearth", g_n |> u"m/s^2") ≈ 1u"Rearth" atol = 0.01e6u"m"
-		@test orbital_period(1u"Msun", 1.000001018u"AU") ≈ 365.25u"d" atol = 0.01u"d"
+		@test gravity(1u"Mearth", 100u"kg", 1u"Rearth") ≈ 979.8398133669466u"N"
 		
+		@test planetary_mass(g_n |> u"m/s^2", 1u"Rearth") ≈ 1u"Mearth" atol=0.01e24u"kg"
+		@test planetary_mass(11.186u"km/s", 1u"Rearth") ≈ 1u"Mearth" atol=0.01e24u"kg"
+		@test planetary_mass(1u"AU", 365.25u"d") ≈ 1u"Msun" atol=0.0001e30u"kg"
+		
+		@test planetary_radius(1u"Mearth", g_n |> u"m/s^2") ≈ 1u"Rearth" atol = 0.01e6u"m"
+		@test planetary_radius(1u"Mearth", 11.186u"km/s") ≈ 1u"Rearth" atol = 0.01e6u"m"
+		@test planetary_radius(5.51u"g/cm^3", g_n |> u"m/s^2") ≈ 1u"Rearth" atol = 2e4u"m"
+		@test planetary_radius(5.51u"g/cm^3", 11.186u"km/s") ≈ 1u"Rearth" atol = 0.01e6u"m"
+		
+		@test orbital_period(1u"Msun", 1.000001018u"AU") ≈ 365.25u"d" atol = 0.01u"d"		
 		@test orbital_radius(1u"Msun", 365.25u"d") ≈ 1.000001018u"AU" atol = 0.0001u"AU"
+		@test orbital_radius(1u"Msun", 29.8u"km/s") ≈ 1.000001018u"AU" atol = 0.002u"AU" # slightly imprecise velocity of earth
 		
 		# close enough.
 		@test orbital_velocity(1.000001018u"AU", 365.25u"d") ≈ 29.78u"km/s" atol = 0.01u"km/s"
-		@test orbital_velocity(1.000001018u"AU", 365.25u"d", 0.0017) ≈ 29.78u"km/s" atol = 0.01u"km/s"		
+		@test orbital_velocity(1.000001018u"AU", 365.25u"d", 0) ≈ orbital_velocity(1.000001018u"AU", 365.25u"d")
+		@test orbital_velocity(1.000001018u"AU", 365.25u"d", 0.0017) ≈ 29.78u"km/s" atol = 0.01u"km/s"	
+		
 		@test escape_velocity(1u"Mearth", 1u"Rearth") ≈ 11.186u"km/s" atol = 0.01u"km/s"
+
+		@test hill_sphere(1u"Msun", 1u"Mearth", 1u"AU") ≈ 0.0098u"AU" atol = 0.01u"AU"		
+		@test gravitational_binding_energy(1u"Mearth", 1u"Rearth") ≈ 2.24e32u"J" atol = 0.001e32u"J"		
+		@test roche_limit(1u"Rearth", 5.51u"g/cm^3", 3.34u"g/cm^3") ≈ 9500u"km" atol = 5u"km"
+		@test barycentric_distance(1u"Mearth", 0.0123u"Mearth", 384000u"km") ≈ 4670u"km" atol = 5u"km"
 	end
 	
 	@testset "kinematics.jl" begin
