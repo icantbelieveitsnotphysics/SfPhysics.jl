@@ -229,6 +229,24 @@ import PhysicalConstants.CODATA2018: g_n, c_0, m_p
 		@test angular_momentum(1u"kg", 1u"rad/s", 2u"m") == 4u"kg*m^2/s"
 	end
 	
+	@testset "SfRocketry" begin
+		@test rocket_propulsive_efficiency(1u"m/s", 1u"m/s") == 1.0
+		
+		@test brachistochrone_transit_time(1u"m", 1u"m/s/s") == 2u"s"
+		@test brachistochrone_transit_time(1u"m", 2u"m/s/s") == sqrt(2) * u"s"
+		@test brachistochrone_transit_time(2u"m", 1u"m/s/s") == 2sqrt(2) * u"s"
+		
+		@test brachistochrone_acceleration(1u"m", 2u"s") == 1u"m/s/s"
+		@test brachistochrone_acceleration(2u"m", 2sqrt(2) * u"s") ≈ 1u"m/s/s"
+		
+		@test brachistochrone_delta_v(1u"m", 1u"m/s/s") == 2u"m/s"
+		@test brachistochrone_delta_v(2u"m", 1u"m/s/s") == 2sqrt(2) * u"m/s"
+		
+		@test mass_ratio(1u"m/s", 1u"m/s") == exp(1)
+		
+		@test delta_v(1u"m/s", exp(1)) == 1u"m/s"
+	end
+	
 	@testset "Documentation" begin
 		doctest(SfPhysics; manual=false)
 	end

@@ -29,7 +29,7 @@ brachistochrone_acceleration(d::Unitful.Length, t::Unitful.Time) = upreferred(4d
 """
 	brachistochrone_delta_v(d::Unitful.Length, a::Acceleration)
 	
-Required ΔV to travel a distance `d` with constant acceleration `d` and attain a final velocity of 0 relative to the start.
+Required ΔV to travel a distance `d` with constant acceleration `a` and attain a final velocity of 0 relative to the start.
 """
 brachistochrone_delta_v(d::Unitful.Length, a::Acceleration) = 2sqrt(d*a) |> u"km/s"
 
