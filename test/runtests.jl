@@ -247,6 +247,12 @@ import PhysicalConstants.CODATA2018: g_n, c_0, m_p
 		@test delta_v(1u"m/s", exp(1)) == 1u"m/s"
 	end
 	
+	@testset "SfFluidDynamics" begin
+		@test drag_force(1, 2u"kg/m^3", 1u"m^2", 1u"m/s") == 2drag_force(1, 1u"kg/m^3", 1u"m^2", 1u"m/s")
+		@test drag_force(1, 2u"kg/m^3", 1u"m^2", 1u"m/s") == 2drag_force(0.5, 2u"kg/m^3", 1u"m^2", 1u"m/s")
+		@test drag_force(1, 2u"kg/m^3", 1u"m^2", 1u"m/s") == 0.25drag_force(1, 2u"kg/m^3", 1u"m^2", 2u"m/s")
+	end
+	
 	@testset "Documentation" begin
 		doctest(SfPhysics; manual=false)
 	end
