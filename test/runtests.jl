@@ -285,6 +285,12 @@ import PhysicalConstants.CODATA2018: g_n, c_0, m_p
 		@test drag_force(1, 2u"kg/m^3", 1u"m^2", 1u"m/s") == 0.25drag_force(1, 2u"kg/m^3", 1u"m^2", 2u"m/s")
 	end
 	
+	@testset "SfBlackHole" begin
+		@test schwarzschild_radius(1u"Msun") ≈ 2950u"m" atol = 5u"m"
+		
+		@test hawking_evaporation(1u"Msun") ≈ 2e67u"yr" atol = 1e66u"yr"
+	end
+	
 	@testset "Documentation" begin
 		doctest(SfPhysics; manual=false)
 	end
