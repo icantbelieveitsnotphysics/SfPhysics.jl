@@ -376,7 +376,7 @@ stellar_luminosity(star::Star) = stellar_luminosity(equatorial_radius(star), sta
 """
 	stellar_irradiance = function(l_stellar::Unitful.Power, r_orbit::Unitful.Length, r_body::Unitful.Length)
 
-Compute the proportion of a star's luminosity that falls upon a circular body of the given radius at the specified orbital distance.	
+Compute the proportion of a star's luminosity that falls upon a body with a circular silhouette of the radius `r_body` at a distance of `r_orbit`.	
 """
 function stellar_irradiance(l_stellar::Unitful.Power, r_orbit::Unitful.Length, r_body::Unitful.Length)
 	Ω = spherical_cap_solid_angle(r_orbit, r_body) # steradians

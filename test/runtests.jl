@@ -90,6 +90,11 @@ import PhysicalConstants.CODATA2018: g_n, c_0, m_p
 		@test stellar_distance(s.earth) == orbital_radius(s.earth)
 		@test stellar_distance(s.moon) == orbital_radius(s.earth)
 		
+		@test stellar_luminosity(1u"Rsun", s.sol.surface_temperature) ≈ 1u"Lsun" atol=1e-5u"Lsun"
+		@test stellar_luminosity(s.sol) ≈ 1u"Lsun" atol=1e-5u"Lsun"
+		
+		@test stellar_irradiance(s.earth)/cross_sectional_area(s.earth) ≈ 1361u"W/m^2" atol = 0.2u"W/m^2"
+		
 		@test planetary_equilibrium_temperature(s.earth) ≈ 255u"K" atol = 1u"K"
 		
 		@test absolute_magnitude(s.jupiter) ≈ -9.4 atol = 0.05
