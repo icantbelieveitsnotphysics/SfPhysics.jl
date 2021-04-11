@@ -6,7 +6,7 @@ using Unitful
 import ..SfUnits: Angle, to_angle, Acceleration, Speed
 
 export rocket_propulsive_efficiency, brachistochrone_transit_time, brachistochrone_acceleration, brachistochrone_delta_v,
-	boost_coast_transit_time, boost_coast_thrust_time, beam, mass_ratio, delta_v, rocket_thrust, rocket_power,
+	boost_coast_transit_time, boost_coast_thrust_time, beam_core_mass_ratio, mass_ratio, delta_v, rocket_thrust, rocket_power,
 	mass_flow, exhaust_velocity, shkadov_thrust
 
 rocket_propulsive_efficiency(ship_velocity::Speed, exhaust_velocity::Speed) = 
@@ -67,7 +67,22 @@ function boost_coast_thrust_time(dist::Unitful.Length, acc::Acceleration, transi
 	end
 end
 
+"""
+	beam_core_mass_ratio(a, dv::Speed, ve::Speed)
+	
+Mass ratio of a rocket where mass is lost without contributing to thrust, eg. a beam core rocket.
+
+# Arguments
+ - `a`: Fraction of propellant mass remaining after reaction (.22 for Frisbee rocket).
+ - `dv::Speed`: mission delta-V (.25c for Frisbee rocket).
+ - `ve::Speed`: exhaust velocity (.33c for Frisbee rocket).
+ 
+ Derivation in Robert Frisbee's [How to build an antimatter rocket for interstellar missions](https://web.archive.org/web/20060601234257/http://www.aiaa.org/Participate/Uploads/2003-4676.pdf).
+"""
 function beam_core_mass_ratio(a, dv::Speed, ve::Speed)
+	# un-tidied form of the equation looks more like this:
+	# bcmr(a, ∆V, Isp) = ( ( (-2Isp*∆V/c_0^2+(1-a)-((1-a)^2+4a*Isp^2/c_0^2)^0.5)*(1-a+((1-a)^2+4a*Isp^2/c_0^2)^0.5) ) /( (-2Isp*∆V/c_0^2+(1-a)+((1-a)^2+4a*Isp^2/c_0^2)^0.5)*(1-a-((1-a)^2+4a*Isp^2/c_0^2)^0.5) ) )^(1 / ((1-a)^2+4a*Isp^2/c_0^2)^0.5)
+
 	k1 = sqrt((1-a)^2+4a*ve^2/c_0^2)
 	k2 = (-2ve * dv / c_0^2) + 1 - a
 

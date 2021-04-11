@@ -242,9 +242,36 @@ import PhysicalConstants.CODATA2018: g_n, c_0, m_p
 		@test brachistochrone_delta_v(1u"m", 1u"m/s/s") == 2u"m/s"
 		@test brachistochrone_delta_v(2u"m", 1u"m/s/s") == 2sqrt(2) * u"m/s"
 		
+		@test boost_coast_transit_time(100u"m", 1u"m/s/s", 1u"s") == 101u"s"
+		@test boost_coast_transit_time(200u"m", 1u"m/s/s", 1u"s") == 201u"s"
+		@test boost_coast_transit_time(100u"m", 1u"m/s/s", 2u"s") == 52u"s"
+		@test boost_coast_transit_time(100u"m", 2u"m/s/s", 1u"s") == 51u"s"
+		
+		@test boost_coast_thrust_time(100u"m", 1u"m/s/s", 101u"s") == 1u"s"
+		@test boost_coast_thrust_time(200u"m", 1u"m/s/s", 201u"s") == 1u"s"
+		@test boost_coast_thrust_time(100u"m", 1u"m/s/s", 52u"s") == 2u"s"
+		@test boost_coast_thrust_time(100u"m", 2u"m/s/s", 51u"s") == 1u"s"
+		
+		@test beam_core_mass_ratio(.22, .25u"c", .33u"c") ≈ 5.56 atol = 0.01 # frisbee got 5.45 for his mass ratio, but I cannot replicate it.
+		
 		@test mass_ratio(1u"m/s", 1u"m/s") == exp(1)
 		
 		@test delta_v(1u"m/s", exp(1)) == 1u"m/s"
+		@test delta_v(1u"m/s" / g_n, exp(1)) == 1u"m/s"
+		
+		@test rocket_thrust(1u"m/s", 1u"kg/s") == 1u"N"
+		@test rocket_thrust(1u"m/s", 0.5u"W") == 1u"N"
+		
+		@test rocket_power(1u"m/s", 2u"kg/s") == 1u"W"
+		@test rocket_power(2u"m/s", 1u"kg/s") == 2u"W"
+		@test rocket_power(1u"m/s", 2u"N") == 1u"W"
+		@test rocket_power(2u"m/s", 1u"N") == 1u"W"
+		
+		@test mass_flow(1u"m/s", 1u"N") == 1u"kg/s"
+		
+		@test exhaust_velocity(1u"m/s" / g_n) == 1u"m/s"
+		@test exhaust_velocity(1u"N", 1u"kg/s") == 1u"m/s"
+		@test exhaust_velocity(1u"W", 2u"kg/s") ≈ 1u"m/s"
 	end
 	
 	@testset "SfFluidDynamics" begin
