@@ -291,6 +291,18 @@ import PhysicalConstants.CODATA2018: g_n, c_0, m_p
 		@test hawking_evaporation(1u"Msun") ≈ 2e67u"yr" atol = 1e66u"yr"
 	end
 	
+	@testset "SfLaser" begin
+		d = 4.7u"cm"
+		r = 350u"km"
+		λ = 500u"nm"
+		w0 = diffraction_limited_spot_diameter(r, d, λ)
+		
+		@test diffraction_limited_spot_diameter(350u"km", 4.7u"cm", 500u"nm") ≈ 474u"cm" atol=1u"mm"
+		@test diffraction_limited_element_size(r, w0, λ) ≈ d
+		@test diffraction_limited_range(d, w0, λ) ≈ r
+		@test diffraction_limited_wavelength(r, d, w0) ≈ λ
+	end
+	
 	@testset "Documentation" begin
 		doctest(SfPhysics; manual=false)
 	end
