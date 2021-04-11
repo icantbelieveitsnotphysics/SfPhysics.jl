@@ -19,6 +19,7 @@ include("gravity.jl")
 include("blackhole.jl")
 
 @reexport using .SfGravity
+@reexport using .SfBlackHole
 
 include("rocketry.jl")
 

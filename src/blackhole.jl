@@ -1,3 +1,5 @@
+module SfBlackHole
+
 import PhysicalConstants.CODATA2018: G, ħ, c_0
 
 export spaghettification_tensile_force, schwarzschild_radius, hawking_temperature, bekenstein_hawking_luminosity, hawking_evaporation
@@ -11,3 +13,5 @@ hawking_temperature(m::Unitful.Mass) = (ħ * c_0^3)/(8π * G * m * k_B) |> u"K"
 bekenstein_hawking_luminosity(m::Unitful.Mass) = (ħ * c_0^6)/(15360π * G^2 * m^2)
 
 hawking_evaporation(m::Unitful.Mass) = (5120π * G^2 * m^3)/(ħ * c_0^4)
+
+end
