@@ -1,10 +1,12 @@
 module SfElectro
 
-using Unitful
+using Unitful, Documenter
 
 import PhysicalConstants.CODATA2018: μ_0
 
-export energy_density, field_strength, dipole_distance
+export energy_density, field_strength, lorentz_force, dipole_distance
+	
+DocMeta.setdocmeta!(SfElectro, :DocTestSetup, :(using Unitful, UnitfulAstro, ..SfElectro); recursive=true)
 
 @derived_dimension MagneticDipole Unitful.𝐈*Unitful.𝐋^2
 
@@ -12,7 +14,12 @@ export energy_density, field_strength, dipole_distance
     energy_density(b::Unitful.BField)
 	
 Energy density of a uniform magnetic field
-"""
+
+# Example
+```jldoctest
+julia> energy_density(1u"T")
+397887.35751313815 J m^-3
+```"""
 energy_density(b::Unitful.BField) = b^2 / 2μ_0 |> u"J/m^3"
 
 """

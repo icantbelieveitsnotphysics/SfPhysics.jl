@@ -303,6 +303,16 @@ import PhysicalConstants.CODATA2018: g_n, c_0, m_p
 		@test diffraction_limited_wavelength(r, d, w0) ≈ λ
 	end
 	
+	@testset "SfElectro" begin
+		dp=7.95e22u"A*m^2" # earth's magnetic dipole (TODO: add to planetary/SfSolarSystem?)
+		
+		@test energy_density(1u"T") == 397887.35751313815u"J/m^3"
+		@test field_strength(energy_density(1u"T")) == 1u"T"
+		@test lorentz_force(1u"A", 1u"m", 1u"T") == 1u"N"
+		@test field_strength(dp, 1u"Rearth") ≈ 60u"μT" atol = 1.5u"μT"
+		@test dipole_distance(dp, 60u"μT") ≈ 1u"Rearth" atol = 0.01u"Rearth"
+	end
+	
 	@testset "Documentation" begin
 		doctest(SfPhysics; manual=false)
 	end
