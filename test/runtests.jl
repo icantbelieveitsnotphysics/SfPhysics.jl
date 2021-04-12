@@ -297,10 +297,18 @@ import PhysicalConstants.CODATA2018: g_n, c_0, m_p
 		λ = 500u"nm"
 		w0 = diffraction_limited_spot_diameter(r, d, λ)
 		
-		@test diffraction_limited_spot_diameter(350u"km", 4.7u"cm", 500u"nm") ≈ 474u"cm" atol=1u"mm"
+		@test diffraction_limited_spot_diameter(r, d, λ) ≈ 474u"cm" atol=1u"mm"
 		@test diffraction_limited_element_size(r, w0, λ) ≈ d
 		@test diffraction_limited_range(d, w0, λ) ≈ r
 		@test diffraction_limited_wavelength(r, d, w0) ≈ λ
+		
+		m2 = 2
+		w0 = diffraction_limited_spot_diameter(r, d, λ, m2)
+		
+		@test diffraction_limited_spot_diameter(r, d, λ, m2) ≈ 948.1u"cm" atol=1u"mm"
+		@test diffraction_limited_element_size(r, w0, λ, m2) ≈ d
+		@test diffraction_limited_range(d, w0, λ, m2) ≈ r
+		@test diffraction_limited_wavelength(r, d, w0, m2) ≈ λ
 	end
 	
 	@testset "SfElectro" begin
