@@ -18,7 +18,6 @@ where ``k_B`` is the Boltzmann constant.
 """
 maxwell_boltzmann_peak_speed(m::Unitful.Mass, T::Unitful.Temperature) = sqrt((2k_B*T)/m) |> u"m/s"
 
-
 """
     rms_thermal_velocoty(m::Unitful.Mass, T::Unitful.Temperature)
 	
@@ -28,7 +27,7 @@ Compute RMS of the Maxwell-Boltzmann speed distribution for a gas with molecular
 
 where ``k_B`` is the Boltzmann constant.
 """
-rms_thermal_velocity(m::Unitful.Mass, T::Unitful.Temperature) = sqrt((2k_B*T)/m) |> u"m/s"
+rms_thermal_velocity(m::Unitful.Mass, T::Unitful.Temperature) = sqrt((3k_B*T)/m) |> u"m/s"
 
 """
     black_body_radiant_flux(t::Unitful.Temperature, ϵ::Real = 1, amb::Unitful.Temperature = 0u"K")

@@ -2,7 +2,7 @@ using SfPhysics
 using Test
 
 using Unitful, UnitfulAstro, Documenter
-import PhysicalConstants.CODATA2018: g_n, c_0, m_p
+import PhysicalConstants.CODATA2018: g_n, c_0, m_p, N_A
 
 @testset "SfPhysics.jl" begin
 	@testset "SfGravity" begin
@@ -319,6 +319,15 @@ import PhysicalConstants.CODATA2018: g_n, c_0, m_p
 		@test lorentz_force(1u"A", 1u"m", 1u"T") == 1u"N"
 		@test field_strength(dp, 1u"Rearth") ≈ 60u"μT" atol = 1.5u"μT"
 		@test dipole_distance(dp, 60u"μT") ≈ 1u"Rearth" atol = 0.01u"Rearth"
+	end
+	
+	@testset "SfThermo" begin
+		n2 = 0.028u"kg/mol"/N_A
+		
+		@test maxwell_boltzmann_peak_speed(n2, 300u"K") ≈ 422u"m/s" atol=0.1u"m/s"
+		@test rms_thermal_velocity(n2, 300u"K") ≈ 517u"m/s" atol=0.1u"m/s"
+		
+		@test black_body_radiated_power(5772u"K", area(Sphere(1u"Rsun"))) ≈ 1u"Lsun" atol = 1e-5u"Lsun" # approximate luminosity of the sun
 	end
 	
 	@testset "Documentation" begin
