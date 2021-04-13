@@ -70,4 +70,6 @@ include("electro.jl")
 
 include("weaponry.jl")
 
+@reexport using .SfWeaponry
+
 end

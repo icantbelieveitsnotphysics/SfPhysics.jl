@@ -1,5 +1,7 @@
+module SfWeaponry
+
 using Unitful
-using .SfElectro
+using ..SfElectro
 
 export cratering_depth, cratering_strength, cratering_volume, jet_penetrator, newtonian_penetrator, coilgun_velocity, coilgun_field_strength,
 	coilgun_length
@@ -24,14 +26,14 @@ end
 	
 Approximation for penetration depth of hypervelocity jet of density `ρj` and length `l` into solid material of density `ρt`.
 """
-jet_penetrator(l::Unitful.Length, ρj::Unitful.Density, ρt::Unitful.Density) = l * sqrt(ρj / ρt)
+jet_penetrator(l::Unitful.Length, ρj::Unitful.Density, ρt::Unitful.Density) = l * sqrt(ρj / ρt) |> unit(l)
 
 """
-    newtonian_penetrator(l::Unitful.Length, ρj::Unitful.Density, ρt::Unitful.Density)
+    newtonian_penetrator(l::Unitful.Length, ρp::Unitful.Density, ρt::Unitful.Density)
 	
 Approximation for penetration depth of high velocity impactor of density `ρj` and length `l` into solid material of density `ρt`.
 """
-newtonian_penetrator(l::Unitful.Length, ρj::Unitful.Density, ρt::Unitful.Density) = l * (ρj / ρt)
+newtonian_penetrator(l::Unitful.Length, ρp::Unitful.Density, ρt::Unitful.Density) = l * (ρp / ρt) |> unit(l)
 
 """
     coilgun_velocity(m::Unitful.Mass, r::Unitful.Length, l::Unitful.Length, b::Tesla)
@@ -69,4 +71,6 @@ function coilgun_length(m::Unitful.Mass, r::Unitful.Length, b::Unitful.BField, v
 	a = π * r^2
 	
 	return ke / (ed*a)|>u"m"
+end
+
 end
