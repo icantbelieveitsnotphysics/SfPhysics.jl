@@ -1,8 +1,12 @@
 module SfUnits
 
-using Unitful
+using Unitful, Documenter
+	
+DocMeta.setdocmeta!(SfUnits, :DocTestSetup, :(using Unitful, ..SfUnits); recursive=true)
 
-export kardashev, tnt
+import PhysicalConstants.CODATA2018: k_B
+
+export kardashev, tnt, convert_temp
 
 @dimension KP "KP" KardashevPower
 @derived_dimension KPower KP
@@ -51,5 +55,29 @@ kardashev(k::KPower) = u"W" * 10^((ustrip(k |> u"Kdv") * 9.73) + 7.38)
 Convenience method for converting an energy quantity into tonnes of TNT equivalent.
 """
 tnt(e::Energy) = e |> u"tt"
+
+"""
+    convert_temp(e::Energy)
+	
+Convert a temperature defined as eg. energy per atom `e` to kelvin.
+
+# Example
+```jldoctest
+julia> convert_temp(1u"eV")
+11604.518121550082 K
+```"""
+convert_temp(e::Energy) = e / k_B |> u"K"
+
+"""
+    convert_temp(t::Unitful.Temperature)
+	
+Convert a temperature `t` in eg. kelvin to eV per atom.
+
+# Example
+```jldoctest
+julia> convert_temp(12000u"K")
+1.0340799914574215 eV
+```"""
+convert_temp(t::Unitful.Temperature) = t * k_B |> u"eV"
 
 end

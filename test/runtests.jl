@@ -196,6 +196,8 @@ import PhysicalConstants.CODATA2018: g_n, c_0, m_p, N_A
 		@test 1e20u"W" |> kardashev |> kardashev == 1e20u"W"
 		
 		@test tnt(1e9u"J") |> u"J" ≈ 1e9u"J"
+		
+		@test convert_temp(1u"eV") |> convert_temp == 1u"eV"
 	end
 	
 	@testset "SfCoriolis" begin
