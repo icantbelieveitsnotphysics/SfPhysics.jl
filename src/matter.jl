@@ -28,28 +28,28 @@ yield_strength(m::Material) = m.yield_strength
 	
 Acceleration due to bouyancy effects experienced by an object with density `ρ_body` in a fluid with density `ρ_fluid`, undergoing acceleration `g` (which defaults to Earth gravity).
 """
-bouyancy(ρ_body::Unitful.Density, ρ_fluid::Unitful.Density; g = g_n) = upreferred(g * ρ_fluid / ρ_body)
+bouyancy(ρ_body::Unitful.Density, ρ_fluid::Unitful.Density; g = g_n) = g * ρ_fluid / ρ_body
 
 """
 	bouyancy(ρ_body::Unitful.Density, ρ_fluid::Unitful.Density; g = g_n)
 	
 Acceleration due to bouyancy effects experienced by an object made of `body` in a fluid composed of `fluid`, undergoing acceleration `g` (which defaults to Earth gravity).
 """
-bouyancy(body::Material, fluid::Material; g = g_n) = upreferred(g * density(fluid) / density(body))
+bouyancy(body::Material, fluid::Material; g = g_n) = g * density(fluid) / density(body)
 
 """
     bouyancy(v_body::Unitful.Volume, ρ_fluid::Unitful.Density; g = g_n)
 	
 Bouyancy force felt by an object of volume `v_body` in a fluid of density `ρ_fluid`, undergoing acceleration `g` (which defaults to Earth gravity).
 """
-bouyancy(v_body::Unitful.Volume, ρ_fluid::Unitful.Density; g = g_n) = upreferred(g * ρ_fluid * v_body)
+bouyancy(v_body::Unitful.Volume, ρ_fluid::Unitful.Density; g = g_n) = g * ρ_fluid * v_body
 
 """
-    bouyancy(v_body::Unitful.Volume, ρ_fluid::Unitful.Density; g = g_n)
+    bouyancy(v_body::Unitful.Volume, fluid; g = g_n)
 	
 Bouyancy force felt by an object of volume `v_body` in a fluid composed of `fluid`, undergoing acceleration `g` (which defaults to Earth gravity).
 """
-bouyancy(v_body::Unitful.Volume, fluid::Material; g = g_n) = upreferred(g * density(fluid) * v_body)
+bouyancy(v_body::Unitful.Volume, fluid; g = g_n) = g * density(fluid) * v_body
 
 """
     compression_energy(n, T, v_initial, v_final)

@@ -344,6 +344,31 @@ import PhysicalConstants.CODATA2018: g_n, c_0, m_p, N_A
 		@test coilgun_length(1u"g", 1u"cm", 1u"T", 500u"m/s") ≈ 1u"m"
 	end
 	
+	@testset "SfObjects" begin
+		m = Material(1000u"kg/m^3", 0u"Pa")
+		s = Sphere(1.0u"m")
+		o = Object(s, m)
+		
+		@test shape(o) == s
+		@test radius(o) == 1u"m"
+		@test area(o) == area(s)
+		@test volume(o) == volume(s)
+		
+		@test density(o) == density(m)
+		
+		@test mass(o) == 4000π * u"kg" / 3
+		
+		@test bouyancy(s, m) ≈ 4000π * g_n * u"kg" / 3
+		@test bouyancy(o, m) == 0u"N" # water sphere neutrally bouyant in water
+		
+		n = Material(2000u"kg/m^3", 0u"Pa")
+		
+		@test bouyancy(o, n) ≈ 4000π * g_n * u"kg" / 3
+		
+		@test sphere_of(m, mass(o)) |> shape == s
+		@test cube_of(m, 1000u"kg") |> shape == Cube(1.0u"m")
+	end
+	
 	@testset "Documentation" begin
 		doctest(SfPhysics; manual=false)
 	end
