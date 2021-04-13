@@ -1,11 +1,14 @@
 module SfThermo
 
-using Unitful
+using Unitful, Documenter
+	
+DocMeta.setdocmeta!(SfThermo, :DocTestSetup, :(using Unitful, ..SfThermo); recursive=true)
 
 import PhysicalConstants.CODATA2018: k_B, N_A, σ
+import ..SfUnits: Energy, SpecificEnergy, MolarMass
 
 export maxwell_boltzmann_peak_speed, rms_thermal_velocity, black_body_radiant_flux, black_body_radiated_power,
-	ideal_gas_kinetic_energy, ideal_gas_cooling_time
+	ideal_gas_kinetic_energy, ideal_gas_cooling_time, convert_energy, convert_temperature
 
 """
     maxwell_boltzmann_peak_speed(m::Unitful.Mass, T::Unitful.Temperature)
@@ -78,5 +81,53 @@ the radiator emissivity, and ``T_initial`` and ``T_final`` and the start and end
 """
 ideal_gas_cooling_time(n, t_initial::Unitful.Temperature, t_final::Unitful.Temperature, a::Unitful.Area, ϵ::Real = 1) = 
 	upreferred(((n * k_B) / (2ϵ * σ * a)) * ((1/t_final^3) - (1 / t_initial^3)))
+
+"""
+    convert_temperature(e::Energy)
+	
+Convert a temperature defined as eg. energy per atom `e` to kelvin.
+
+# Example
+```jldoctest
+julia> convert_temperature(1u"eV")
+11604.518121550082 K
+```"""
+convert_temperature(e::Energy) = e / k_B |> u"K"
+
+"""
+    convert_temperature(t::Unitful.Temperature)
+	
+Convert a temperature `t` in eg. kelvin to eV per atom.
+
+# Example
+```jldoctest
+julia> convert_temperature(12000u"K")
+1.0340799914574215 eV
+```"""
+convert_temperature(t::Unitful.Temperature) = t * k_B |> u"eV"
+
+"""
+    convert_energy(e::SpecificEnergy, mn::MolarMass)
+	
+Convert specific energy `e` for given material `mn` to eV per atom.
+
+# Example
+```jldoctest
+julia> convert_energy(1e10u"erg/g", 60u"g/mol")
+0.6218561793757305 eV
+```"""
+convert_energy(e::SpecificEnergy, mn::MolarMass) = e * mn / N_A |> u"eV"
+
+"""
+    convert_energy(e::Energy, mn::MolarMass)
+	
+Convert energy per atom `e` to specific energy for a material with given molar mass `mn`.
+
+# Example
+```jldoctest
+julia> convert_energy(0.6218561793757305u"eV", 60u"g/mol")
+999999.9999999999 J kg^-1
+```"""
+convert_energy(e::Energy, mn::MolarMass) = (e * N_A) / mn |> u"J/kg"
 
 end

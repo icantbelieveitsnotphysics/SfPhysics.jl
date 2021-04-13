@@ -196,8 +196,6 @@ import PhysicalConstants.CODATA2018: g_n, c_0, m_p, N_A
 		@test 1e20u"W" |> kardashev |> kardashev == 1e20u"W"
 		
 		@test tnt(1e9u"J") |> u"J" ≈ 1e9u"J"
-		
-		@test convert_temp(1u"eV") |> convert_temp == 1u"eV"
 	end
 	
 	@testset "SfCoriolis" begin
@@ -330,6 +328,10 @@ import PhysicalConstants.CODATA2018: g_n, c_0, m_p, N_A
 		@test rms_thermal_velocity(n2, 300u"K") ≈ 517u"m/s" atol=0.1u"m/s"
 		
 		@test black_body_radiated_power(5772u"K", area(Sphere(1u"Rsun"))) ≈ 1u"Lsun" atol = 1e-5u"Lsun" # approximate luminosity of the sun
+		
+		@test convert_temperature(1u"eV") |> convert_temperature == 1u"eV"
+		
+		@test convert_energy(convert_energy(1u"MJ/kg", 1u"g/mol"), 1u"g/mol") ≈ 1u"MJ/kg"
 	end
 	
 	@testset "SfWeaponry" begin

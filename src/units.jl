@@ -1,23 +1,21 @@
 module SfUnits
 
-using Unitful, Documenter
-	
-DocMeta.setdocmeta!(SfUnits, :DocTestSetup, :(using Unitful, ..SfUnits); recursive=true)
+using Unitful
 
-import PhysicalConstants.CODATA2018: k_B
-
-export kardashev, tnt, convert_temp
+export kardashev, tnt
 
 @dimension KP "KP" KardashevPower
 @derived_dimension KPower KP
 
 const Power{T, U} = Unitful.AbstractQuantity{T,Unitful.𝐋^2*Unitful.𝐌*Unitful.𝐓^-3,U}
 const Energy{T, U} = Unitful.AbstractQuantity{T,Unitful.𝐋^2*Unitful.𝐌*Unitful.𝐓^-2,U}
+const SpecificEnergy{T, U} = Unitful.AbstractQuantity{T,Unitful.𝐋^2*Unitful.𝐓^-2,U}
 const AngularVelocity{T, U} = Unitful.AbstractQuantity{T, Unitful.𝐓 ^-1, U}
 const AngularMomentum{T, U} = Unitful.AbstractQuantity{T, Unitful.𝐋^2 * Unitful.𝐌 * Unitful.𝐓 ^-1, U}
 const Acceleration{T, U} = Unitful.AbstractQuantity{T,Unitful.𝐋*Unitful.𝐓^-2, U}
 const Speed{T, U} = Unitful.AbstractQuantity{T,Unitful.𝐋*Unitful.𝐓^-1, U}
 const Mass{T, U} = Unitful.AbstractQuantity{T,Unitful.𝐌, U}
+const MolarMass{T, U} = Unitful.AbstractQuantity{T,Unitful.𝐌 * Unitful.𝐍^-1, U}
 
 const Angle{T} = Union{ Quantity{T, NoDims, typeof(u"°")}, Quantity{T, NoDims, typeof(u"rad")} }
 	
@@ -55,29 +53,5 @@ kardashev(k::KPower) = u"W" * 10^((ustrip(k |> u"Kdv") * 9.73) + 7.38)
 Convenience method for converting an energy quantity into tonnes of TNT equivalent.
 """
 tnt(e::Energy) = e |> u"tt"
-
-"""
-    convert_temp(e::Energy)
-	
-Convert a temperature defined as eg. energy per atom `e` to kelvin.
-
-# Example
-```jldoctest
-julia> convert_temp(1u"eV")
-11604.518121550082 K
-```"""
-convert_temp(e::Energy) = e / k_B |> u"K"
-
-"""
-    convert_temp(t::Unitful.Temperature)
-	
-Convert a temperature `t` in eg. kelvin to eV per atom.
-
-# Example
-```jldoctest
-julia> convert_temp(12000u"K")
-1.0340799914574215 eV
-```"""
-convert_temp(t::Unitful.Temperature) = t * k_B |> u"eV"
 
 end
