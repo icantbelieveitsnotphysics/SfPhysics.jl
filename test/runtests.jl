@@ -330,6 +330,20 @@ import PhysicalConstants.CODATA2018: g_n, c_0, m_p, N_A
 		@test black_body_radiated_power(5772u"K", area(Sphere(1u"Rsun"))) ≈ 1u"Lsun" atol = 1e-5u"Lsun" # approximate luminosity of the sun
 	end
 	
+	@testset "SfWeaponry" begin
+		@test newtonian_penetrator(1u"m", 1u"kg/m^3", 1u"kg/m^3") == 1u"m"
+		@test newtonian_penetrator(1u"m", 1u"kg/m^3", 2u"kg/m^3") == 0.5u"m"
+		@test newtonian_penetrator(1u"m", 2u"kg/m^3", 1u"kg/m^3") == 2u"m"
+		
+		@test jet_penetrator(1u"m", 1u"kg/m^3", 1u"kg/m^3") == 1u"m"
+		@test jet_penetrator(1u"m", 1u"kg/m^3", 2u"kg/m^3") ≈ 1u"m"/sqrt(2)
+		@test jet_penetrator(1u"m", 2u"kg/m^3", 1u"kg/m^3") == sqrt(2) * u"m"
+		
+		@test coilgun_velocity(1u"g", 1u"cm", 1u"m", 1u"T") ≈ 500u"m/s"
+		@test coilgun_field_strength(1u"g", 1u"cm", 1u"m", 500u"m/s") ≈ 1u"T"
+		@test coilgun_length(1u"g", 1u"cm", 1u"T", 500u"m/s") ≈ 1u"m"
+	end
+	
 	@testset "Documentation" begin
 		doctest(SfPhysics; manual=false)
 	end
