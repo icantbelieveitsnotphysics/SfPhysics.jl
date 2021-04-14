@@ -1,9 +1,9 @@
 module SfPlanetary
 
 using Unitful, UnitfulAstro, UnitfulAngles
-using ..SfGeometry, ..SfThermo
+using ..SfGeometry
 
-export Body, Orbit, Rotation, Star
+export AbstractBody, Body, Orbit, Rotation, Star
 export satellites
 
 import ..SfUnits: Angle, to_angle
@@ -143,9 +143,9 @@ import ..SfAstronomy: absolute_magnitude, apparent_magnitude, diffuse_sphere_q
 
 import PhysicalConstants.CODATA2018: σ, G, k_B # σ = Stefan-Boltzmann constant, k_B Boltzmann constant
 
-export gravity, orbital_period, orbital_radius, orbital_velocity, escape_velocity, hill_sphere,
+export mass, gravity, orbital_period, orbital_radius, orbital_velocity, escape_velocity, hill_sphere,
 	relativistic_kinetic_energy, kinetic_energy, stellar_luminosity, stellar_irradiance, planetary_equilibrium_temperature,
-	jeans_escape_timescale, jeans_parameter, gravitational_binding_energy, roche_limit, volume, density, radius, equatorial_radius,
+	gravitational_binding_energy, roche_limit, volume, density, radius, equatorial_radius,
 	area, cross_sectional_area, absolute_magnitude, apparent_magnitude, star, stellar_distance
 
 """
@@ -428,29 +428,6 @@ If the body does not ultimately orbit a star, an error will be raised. Binary an
 """
 planetary_equilibrium_temperature(body::Body) = 
 	planetary_equilibrium_temperature(stellar_irradiance(body) / cross_sectional_area(body), body.bond_albedo) |> u"K"
-	
-# temperature, exosphere altiutude, planetary mass, planetary radius, gas molecular mass
-# http://cococubed.asu.edu/code_pages/jeans_escape.shtml
-function jeans_escape_timescale(T::Unitful.Temperature, h::Unitful.Length, M::Unitful.Mass, R::Unitful.Length, m::Unitful.Mass)
-   g = (G*M)/(R+h)^2 # gravity at exobase
-   H = (k_B*T)/(m*g) # scale height for gas
-   v_peak=maxwell_boltzmann_peak_speed(m, T) # peak of maxwell-boltzmann distribution
-   v_esc=sqrt((2G*M)/(R+h)) # escape velocity of planet at exosphere altitude
-   λ =(v_esc/v_peak)^2
-   v_jeans = v_peak * ((1 + λ)*exp(-λ))/sqrt(4π)
-   return H/v_jeans |> u"yr"
-end
-
-jeans_escape_timescale(T::Unitful.Temperature, h::Unitful.Length, body::AbstractBody, m::Unitful.Mass) = 
-	jeans_escape_timescale(T, h, mass(body), radius(body), m)
-
-# https://arxiv.org/ftp/arxiv/papers/1009/1009.5110.pdf
-# https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2008GL036513
-jeans_parameter(m_planet::Unitful.Mass, m_molecule::Unitful.Mass, t_exosphere::Unitful.Temperature, r_exosphere::Unitful.Length) = 
-	(G * m_planet * m_molecule) / (k_B * t_exosphere * r_exosphere) |> u"m/m"
-
-jeans_parameter(body::AbstractBody, m_molecule::Unitful.Mass, t_exosphere::Unitful.Temperature, r_exosphere::Unitful.Length) = 
-	jeans_parameter(mass(body), m_molecule, t_exosphere, r_exosphere)
 	
 """
     absolute_magnitude(body::Body)
