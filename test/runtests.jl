@@ -38,7 +38,18 @@ import PhysicalConstants.CODATA2018: g_n, c_0, m_p, N_A
 		@test barycentric_distance(1u"Mearth", 0.0123u"Mearth", 384000u"km") ≈ 4670u"km" atol = 5u"km"
 	end
 	
-	@testset "kinematics.jl" begin
+	@testset "kinematics.jl" begin		
+		@test kinetic_energy(0u"kg", 1u"m/s") == 0u"J"
+		@test kinetic_energy(1u"kg", 0u"m/s") == 0u"J"
+		@test kinetic_energy(2u"kg", 1u"m/s") == 1u"J"
+		@test kinetic_energy(2u"kg", 2u"m/s") == 4u"J"
+		@test kinetic_energy(2u"kg", -2u"m/s") == 4u"J"
+		
+		@test distance(1u"m/s/s", 10u"s") == 50u"m"
+		@test distance(1u"m/s/s", 10u"s", 1u"m/s") == 60u"m"
+		@test distance(1u"m/s/s", 10u"s", -1u"m/s") == 40u"m"
+		@test distance(-1u"m/s/s", 10u"s", 5u"m/s") == 0u"m"
+		
 		@test duration(0u"m/s^2", 10u"m") == Inf * 1u"s"
 		@test duration(10u"m/s^2", 0u"m") == 0u"s"
 		@test duration(10u"m/s^2", 10u"m") == sqrt(2) * 1u"s"
@@ -50,11 +61,24 @@ import PhysicalConstants.CODATA2018: g_n, c_0, m_p, N_A
 		@test_throws DomainError duration(10u"m/s^2", -10u"m", 10u"m/s")
 		@test_throws DomainError duration(0u"m/s^2", 10u"m", -10u"m/s")
 		
-		@test kinetic_energy(0u"kg", 1u"m/s") == 0u"J"
-		@test kinetic_energy(1u"kg", 0u"m/s") == 0u"J"
-		@test kinetic_energy(2u"kg", 1u"m/s") == 1u"J"
-		@test kinetic_energy(2u"kg", 2u"m/s") == 4u"J"
-		@test kinetic_energy(2u"kg", -2u"m/s") == 4u"J"
+		@test acceleration(10u"m", 10u"m/s") == 5u"m/s/s"
+		
+		@test projectile_displacement(100u"m/s", 90u"°", 10u"s", g=10u"m/s/s") == [0u"m", 500u"m"]
+		@test projectile_displacement(100u"m/s", 45u"°", 10u"s", g=10u"m/s/s") ≈ [1000u"m" / sqrt(2), (1000u"m" / sqrt(2)) - 500u"m"]
+		@test projectile_displacement(100u"m/s", 10u"s", g=10u"m/s/s") == projectile_displacement(100u"m/s", 90u"°", 10u"s", g=10u"m/s/s")[2]
+		
+		@test projectile_velocity(100u"m/s", 90u"°", 10u"s", g=10u"m/s/s") == [0u"m/s", 0u"m/s"]
+		@test projectile_velocity(100u"m/s", 45u"°", 10u"s", g=10u"m/s/s")[1] == projectile_velocity(100u"m/s", 45u"°", 5u"s", g=10u"m/s/s")[1]
+		
+		@test projectile_flight_time(100u"m/s", g=10u"m/s/s") == 20u"s"
+		@test projectile_flight_time(100u"m/s", 45u"°", g=10u"m/s/s") == 10sqrt(2) * u"s"
+		
+		@test projectile_apex(100u"m/s", g=10u"m/s/s") == [0u"m", 500u"m"]
+		@test projectile_apex(100u"m/s", 45u"°", g=10u"m/s/s") ≈ [500u"m", 250u"m"]
+		
+		@test projectile_range(100u"m/s", 90u"°", g=10u"m/s/s") == 0u"m"
+		@test projectile_range(100u"m/s", 45u"°", g=10u"m/s/s") == 1000u"m"
+		
 	end
 	
 	@testset "SfPlanetary" begin
