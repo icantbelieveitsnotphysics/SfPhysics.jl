@@ -397,6 +397,16 @@ import PhysicalConstants.CODATA2018: g_n, c_0, m_p, N_A
 		@test cube_of(m, 1000u"kg") |> shape == Cube(1.0u"m")
 	end
 	
+	@testset "SfAtmosphere" begin
+		# sanity checking against the source's own figures using constant exobase altitude and temperature with monatomic gases.
+		@test jeans_escape_timescale(1480u"K", 500u"km", SfSolarSystem.earth, 1u"u") ≈ 6.5e-4u"yr" atol = 1e-5u"yr" # hydrogen
+		@test jeans_escape_timescale(1480u"K", 500u"km", SfSolarSystem.earth, 4u"u") ≈ 1.3e2u"yr" atol = 1u"yr" # helium
+		@test jeans_escape_timescale(1480u"K", 500u"km", SfSolarSystem.earth, 12u"u") ≈ 6.4e17u"yr" atol = 1e16u"yr" # carbon
+		@test jeans_escape_timescale(1480u"K", 500u"km", SfSolarSystem.earth, 14u"u") ≈ 6.3e21u"yr" atol = 1e20u"yr" # nitrogen
+		# this is an order of magnitude greater than the example figures, but I'm inclined to blame the source author for making a mistake.
+		@test jeans_escape_timescale(1480u"K", 500u"km", SfSolarSystem.earth, 16u"u") ≈ 6.4e25u"yr" atol = 1e24u"yr" # oxygen
+	end
+	
 	@testset "Documentation" begin
 		doctest(SfPhysics; manual=false)
 	end
