@@ -179,6 +179,11 @@ import PhysicalConstants.CODATA2018: g_n, c_0, m_p, N_A
 		@test spherical_cap_solid_angle(0u"°") == 0u"sr"
 		@test spherical_cap_solid_angle(180u"°") == 4π * u"sr"
 		@test spherical_cap_solid_angle(0u"m", 2u"m") ≈ 2π * u"sr"
+        
+        @test intersect_circles(3, 1, 1) == 0
+        @test intersect_circles(2, 1, 1) == 0
+        @test intersect_circles(1, 1, 1) ≈ (2π/3)-(sqrt(3)/2) atol=1e-15
+        @test intersect_circles(0, 1, 1) == π
 	end
 	
 	@testset "SfAstronomy" begin

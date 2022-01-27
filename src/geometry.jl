@@ -9,7 +9,7 @@ export Shape, Ellipsoid, TriaxialEllipsoid, Spheroid, Sphere, SphericalShell, Cy
 export volume, radius, area, length
 export unit_x, unit_y, unit_z, sphere_volume, sphere_radius, cylinder_volume, cylinder_radius, cylinder_length, 
 	spherical_cap_solid_angle, is_sphere, is_spheroid, is_triaxial, equatorial_radius, polar_radius, 
-	cross_sectional_area, spherical_shell_volume, spherical_shell_thickness, shape
+	cross_sectional_area, spherical_shell_volume, spherical_shell_thickness, shape, intersecting_circles
 	
 const unit_x = [1, 0, 0]
 const unit_y = [0, 1, 0]
@@ -271,5 +271,39 @@ spherical_shell_volume(r1::Unitful.Length, r2::Unitful.Length) = sphere_volume(m
 Returns the thickness of a spherical shell with inner radius `r_inner` and volume `v`.
 """
 spherical_shell_thickness(r_inner::Unitful.Length, v::Unitful.Volume) = cbrt((3v/4π) + r_inner^3) - r
+
+"""
+    intersect_circles(d, r_1, r_2)
+    
+The area of the intersection of two circles with radii `r_1` ≥ `r_2` and centres separated by `d`
+
+# Example
+```jldoctest
+julia> intersect_circles(2, 1, 1)
+0
+julia> intersect_circles(0, 1, 1)
+3.141592653589793
+"""
+function intersect_circles(d, r_1, r_2)
+    if r_2 > r_1
+        throw(ArgumentError("r_1 must be ≥ r_2"))    
+    end
+    
+    if (d - r_1 - r_2) >= 0
+        return 0
+    elseif d <= (r_1 - r_2)
+        return π * r_1^2
+    end
+    
+    # https://diego.assencio.com/?index=8d6ca3d82151bad815f78addf9b5c1c6
+    
+    d_1= (r_1^2 - r_2^2 + d^2) / 2d
+    d_2 = d - d_1 #(tr^2 - r_1^2 + d^2) / 2d
+    
+    a_1 = r_1^2 * acos(d_1/r_1) - d_1 * sqrt(r_1^2 - d_1^2)
+    a_2 = r_2^2 * acos(d_2/r_2) - d_2 * sqrt(r_2^2 - d_2^2)
+    
+    a_1 + a_2
+end
 
 end
