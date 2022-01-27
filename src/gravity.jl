@@ -99,7 +99,17 @@ Calculate the period of an orbit with semimajor axis `r` about a body with mass 
 ``P = \\sqrt{\\frac{4π^2r^3}{Gm}}``
 """
 orbital_period(m::Unitful.Mass, r::Unitful.Length) = sqrt((4π^2 * r^3) / (G * m)) |> u"s"
-	
+
+"""
+    orbital_period(m1::Unitful.Mass, a1::Unitful.Length, m2::Unitful.Mass, a2::Unitful.Length)
+
+Calculate the orbital period of two co-orbiting bodies of masses `m1` and `m2`,
+with orbital semi-major axes `a1` and `a2`.
+
+``P = 2\\pi \\sqrt{(a_1 + a_2)^3 \\over G(m_1 + m_2)}``
+"""
+orbital_period(m1::Unitful.Mass, a1::Unitful.Length, m2::Unitful.Mass, a2::Unitful.Length) = upreferred(2π * sqrt((a1 + a2)^3 / (G * (m1 + m2))))
+
 """
 	orbital_radius(m::Unitful.Mass, t::Unitful.Time)
 	
