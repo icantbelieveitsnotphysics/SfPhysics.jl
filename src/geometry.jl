@@ -9,7 +9,7 @@ export Shape, Ellipsoid, TriaxialEllipsoid, Spheroid, Sphere, SphericalShell, Cy
 export volume, radius, area, length
 export unit_x, unit_y, unit_z, sphere_volume, sphere_radius, cylinder_volume, cylinder_radius, cylinder_length, 
 	spherical_cap_solid_angle, is_sphere, is_spheroid, is_triaxial, equatorial_radius, polar_radius, 
-	cross_sectional_area, spherical_shell_volume, spherical_shell_thickness, shape, intersecting_circles
+	cross_sectional_area, spherical_shell_volume, spherical_shell_thickness, shape, intersect_circles
 	
 const unit_x = [1, 0, 0]
 const unit_y = [0, 1, 0]

@@ -183,7 +183,7 @@ import PhysicalConstants.CODATA2018: g_n, c_0, m_p, N_A
         @test intersect_circles(3, 1, 1) == 0
         @test intersect_circles(2, 1, 1) == 0
         @test intersect_circles(1, 1, 1) ≈ (2π/3)-(sqrt(3)/2) atol=1e-15
-        @test intersect_circles(0, 1, 1) == π
+        @test intersect_circles(0, 1, 1) ≈ π
 	end
 	
 	@testset "SfAstronomy" begin
