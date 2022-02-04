@@ -56,6 +56,10 @@ include("solar.jl")
 
 export SfSolarSystem
 
+include("orbital.jl")
+
+@reexport using .SfOrbital
+
 include("atmosphere.jl")
 
 @reexport using .SfAtmosphere

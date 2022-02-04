@@ -3,6 +3,7 @@ using Test
 
 using Unitful, UnitfulAstro, Documenter
 import PhysicalConstants.CODATA2018: g_n, c_0, m_p, N_A
+import LinearAlgebra: norm
 
 @testset "SfPhysics.jl" begin
 	@testset "SfGravity" begin
@@ -123,6 +124,35 @@ import PhysicalConstants.CODATA2018: g_n, c_0, m_p, N_A
 		
 		@test absolute_magnitude(s.jupiter) ≈ -9.4 atol = 0.05
 	end
+    
+    @testset "SfOrbital" begin
+        sv = StateVector([1000u"km", 5000u"km", 7000u"km"], [3u"km/s", 4u"km/s", 5u"km/s"])
+        el = state_vector_to_elements(sv, 1u"Mearth")
+        
+        @test el.e ≈ 0.9475409572473679
+        
+        sv2 = elements_to_state_vector(el, 1u"Mearth")
+        
+        @test sv2.r ≈ sv.r
+        @test sv2.v ≈ sv.v
+        
+        t = orbital_period(el, 1u"Mearth")
+        
+        @test t ≈ 9183.8529879387u"s"
+        
+        pos = orbital_position(el, t, 1u"Mearth")
+        
+        @test pos.ν ≈ el.ν atol=0.000001
+        
+        el.ν = 0u"rad"        
+        pos = orbital_position(el, t / 2, 1u"Mearth")
+        
+        @test pos.ν ≈ π 
+        @test time_since_periapsis(pos, 1u"Mearth") ≈ t/2
+        
+        el = OrbitalElements(0, 100000u"km", 0, 0, 0, 0)
+        @test norm(elements_to_state_vector(el, 1u"Mearth").v) ≈ orbital_velocity(1u"Mearth", el.a)
+    end
 	
 	@testset "SfRelativity" begin
 		# use bignums here, otherwise floating point rounding will ruin accuracy (RKE returns 59J at 10m/s!)
