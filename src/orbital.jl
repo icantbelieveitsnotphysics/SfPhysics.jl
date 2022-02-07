@@ -78,7 +78,7 @@ function elements_to_state_vector(orbit::OrbitalElements, central_mass)
     r_rot = r_w * R1 * R2 * R3
     v_rot = v_w * R1 * R2 * R3
     
-    StateVector(upreferred.(r_rot |> transpose), upreferred.(v_rot |> transpose))
+    StateVector(upreferred.(vec(r_rot)), upreferred.(vec(v_rot)))
 end
 
 mean_motion(orbit::OrbitalElements, central_mass) = (2π * u"rad") / orbital_period(orbit, central_mass)
@@ -171,13 +171,59 @@ a body with mass `central_mass`.
 """
 orbital_period(orbit::OrbitalElements, central_mass) = orbital_period(central_mass, orbit.a)
 
+using Random
+
+function random_unit_vector()
+    v = [0.0, 0.0, 0.0]
+    
+    while norm(v) < 0.0001
+        randn!(v)
+    end
+    
+    v /= norm(v)
+end
+
+explode(source::StateVector, fragments, mean_fragment_velocity, σ) = 
+    [StateVector(source.r, source.v + random_unit_vector() * ((rand() * σ) + mean_fragment_velocity)) for i in 1:fragments]
+
+function quantise(orbit::OrbitalElements, central_mass, steps)
+    points = []
+    
+    o = deepcopy(orbit)
+       
+    for ν in 0:steps
+       o.ν = deg2rad(ν)
+       s = elements_to_state_vector(o, central_mass)
+       push!(points, s.r)
+    end
+    
+    return points
+end
+
+function sweep_quantise(orbit::OrbitalElements, central_mass, steps)
+    points = []
+    
+    # the step period needs to be small for tight or highly elliptical orbits
+    s = orbital_period(orbit, central_mass) / steps
+    t = 0u"s"
+    
+    for i in 0:steps
+       o = orbital_position(orbit, t, central_mass)
+       sv = elements_to_state_vector(o, central_mass)
+       push!(points, sv.r)
+       t += s
+    end
+    
+    return points
+end
+
 # needs Plots and UnitfulRecipes
 function plot_orbit(orbit::OrbitalElements, central_mass)
     points = []
     
     o = deepcopy(orbit)
        
-    for ν in 1:360
+    for ν in 0:360
        o.ν = deg2rad(ν)
        s = elements_to_state_vector(o, central_mass)
        push!(points, s.r)
@@ -204,9 +250,29 @@ function animate_orbit(orbit::OrbitalElements, central_mass, steps = 360)
         
     xyz(v) = ([e[1] for e in v], [e[2] for e in v], [e[3] for e in v])
     
+    (xs, ys, zs) = xyz(points)
+    
     #@gif for i in eachindex(xs)
-    #    scatter((xs[i], ys[i], zs[i]), lims=(-1e6,1.2e7))
+    #    scatter((xs[i], ys[i], zs[i]), xlims=(-1e8,1e8), ylims=(-1e8,1e8), zlims=(-1e6,1e6))
     #end
+    
+    anim = Animation()
+    
+    for i in eachindex(triplets[1][1])
+        s=scatter((triplets[1][1][i], triplets[1][2][i], triplets[1][3][i]), xlims=(-1e8,1e8), ylims=(-1e8,1e8), zlims=(-1e6,1e6))
+        for o in triplets
+            plot!(s, o)
+        end
+        for o in triplets
+            xs = ustrip(o[1])
+            ys = ustrip(o[2])
+            zs = ustrip(o[3])
+            push!(s, (xs[i], ys[i], zs[i]))
+        end
+        frame(anim, s)
+    end
+    
+    gif(anim)
 end
 
 end
