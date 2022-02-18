@@ -417,7 +417,7 @@ planetary_equilibrium_temperature(irradiance::ThermalFlux, bond_albedo::Real) = 
 Approximate the planetary equilibrium temperature of a body of radius `r_body` and `bond_albedo`, orbiting a star of luminosity `l_stellar` at a distance of `r_orbit`.
 """
 planetary_equilibrium_temperature(l_stellar::Unitful.Power, r_orbit::Unitful.Length, r_body::Unitful.Length, bond_albedo::Real) =
-	planetary_equilibrium_temperature(stellar_irradiance(s_l, r_orbit, r_body) / (π * r_body^2), bond_albedo) |> u"K"
+	planetary_equilibrium_temperature(stellar_irradiance(l_stellar, r_orbit, r_body) / (π * r_body^2), bond_albedo) |> u"K"
 
 """
     planetary_equilibrium_temperature(body::Body)
