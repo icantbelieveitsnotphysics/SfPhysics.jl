@@ -12,22 +12,37 @@ scale_height(t, m::Unitful.Mass, g = g_n) = (k_B * t) / (m * g) |> u"km"
 
 scale_height(t, m::MolarMass, g = g_n) = (R * t) / (m * g) |> u"km"
 
+function jeans_parameter(v_esc, v_peak)
+    λ =(v_esc/v_peak)^2
+    return ((1 + λ)*exp(-λ))/sqrt(4π)
+end
+
+function jeans_velocity(v_esc, m, T)
+    v_peak=maxwell_boltzmann_peak_speed(m, T) # peak of maxwell-boltzmann distribution
+    v_jeans = v_peak * jeans_parameter(v_esc, v_peak)
+end
+
+function maxwell_boltzmann_fraction(v, m, n = 2)
+    
+end
+
 """
     jeans_escape_timescale(T::Unitful.Temperature, exobase::Unitful.Length, M::Unitful.Mass, R::Unitful.Length, m::Unitful.Mass)
 	
 Approximate Jeans escape timescale for a gas of atomic mass `m` on a planet of mass `M` and radius `R`, with an exobase at altitude `xh` and temperature `T`.
 
 Working from http://cococubed.asu.edu/code_pages/jeans_escape.shtm
+
 """
 function jeans_escape_timescale(T::Unitful.Temperature, xh::Unitful.Length, M::Unitful.Mass, R::Unitful.Length, m::Unitful.Mass)
    g = (G*M)/(R+xh)^2 # gravity at exobase
-   H = (k_B*T)/(m*g) # scale height for gas
-   v_peak=maxwell_boltzmann_peak_speed(m, T) # peak of maxwell-boltzmann distribution
-   v_esc=sqrt((2G*M)/(R+xh)) # escape velocity of planet at exosphere altitude
-   λ =(v_esc/v_peak)^2
-   v_jeans = v_peak * ((1 + λ)*exp(-λ))/sqrt(4π)
+   H = scale_height(T, m, g)
+   v_esc=sqrt((2G*M)/(R+xh)) # escape velocity at exobase
+   v_jeans = jeans_velocity(v_esc, m, T)
    return H/v_jeans |> u"yr"
 end
+
+
 
 """
     jeans_escape_timescale(T::Unitful.Temperature, xh::Unitful.Length, body::AbstractBody, m::Unitful.Mass)
