@@ -4,8 +4,8 @@ using PhysicalConstants.CODATA2018: c_0, g_n, G, StefanBoltzmannConstant, ħ, k_
 using Unitful, UnitfulAstro, Documenter
 
 export vis_viva, gravity, planetary_mass, planetary_radius, escape_velocity, hill_sphere,
-	orbital_velocity, orbital_period, gravitational_binding_energy, roche_limit, gravity_tug_mass,
-	barycentric_distance, tidal_acceleration,
+	orbital_velocity, orbital_period, synodic_period, gravitational_binding_energy, roche_limit, 
+    gravity_tug_mass, barycentric_distance, tidal_acceleration,
 	radial_orbit_time, radial_orbit_displacement
 	
 DocMeta.setdocmeta!(SfGravity, :DocTestSetup, :(using Unitful, UnitfulAstro, ..SfGravity); recursive=true)
@@ -159,6 +159,20 @@ orbital_velocity(parent_mass::Unitful.Mass, semimajor_axis::Unitful.Length, curr
 Approximate the orbital velocity of a body with a circular orbit of radius `radius` about a body with mass `parent_mass`.
 """
 orbital_velocity(parent_mass::Unitful.Mass, radius::Unitful.Length) = sqrt(G * parent_mass / radius) |> u"km/s"
+
+"""
+    synodic_period(t1::Unitful.Time, t2::Unitful.Time)
+
+Return the time between successive conjunctions of two periodic events.
+"""
+synodic_period(t1::Unitful.Time, t2::Unitful.Time) = 1 / abs((1 / t1) - (1 / t2))
+
+"""
+    synodic_period(a, b)
+
+Return the time between successive conjunctions of two objects which are assumed to be orbiting the same body.
+"""
+synodic_period(a, b) = synodic_period(orbital_period(a), orbital_period(b))
 	
 """
 	planetary_mass(orbital_radius::Unitful.Length, orbital_period::Unitful.Time)
