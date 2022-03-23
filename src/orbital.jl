@@ -24,6 +24,8 @@ mutable struct OrbitalElements
     ν # true anomaly
 end
 
+OrbitalElements(;e=0, a, i=0, Ω=0, ω=0, ν=0) = OrbitalElements(e, a, i, Ω, ω, ν)
+
 struct StateVector
     r # position
     v # velocity
@@ -170,109 +172,5 @@ Calculate the orbital period of a body with Keplerian elements `orbit`, orbiting
 a body with mass `central_mass`.
 """
 orbital_period(orbit::OrbitalElements, central_mass) = orbital_period(central_mass, orbit.a)
-
-using Random
-
-function random_unit_vector()
-    v = [0.0, 0.0, 0.0]
-    
-    while norm(v) < 0.0001
-        randn!(v)
-    end
-    
-    v /= norm(v)
-end
-
-explode(source::StateVector, fragments, mean_fragment_velocity, σ) = 
-    [StateVector(source.r, source.v + random_unit_vector() * ((rand() * σ) + mean_fragment_velocity)) for i in 1:fragments]
-
-function quantise(orbit::OrbitalElements, central_mass, steps)
-    points = []
-    
-    o = deepcopy(orbit)
-       
-    for ν in 0:steps
-       o.ν = deg2rad(ν)
-       s = elements_to_state_vector(o, central_mass)
-       push!(points, s.r)
-    end
-    
-    return points
-end
-
-function sweep_quantise(orbit::OrbitalElements, central_mass, steps)
-    points = []
-    
-    # the step period needs to be small for tight or highly elliptical orbits
-    s = orbital_period(orbit, central_mass) / steps
-    t = 0u"s"
-    
-    for i in 0:steps
-       o = orbital_position(orbit, t, central_mass)
-       sv = elements_to_state_vector(o, central_mass)
-       push!(points, sv.r)
-       t += s
-    end
-    
-    return points
-end
-
-# needs Plots and UnitfulRecipes
-function plot_orbit(orbit::OrbitalElements, central_mass)
-    points = []
-    
-    o = deepcopy(orbit)
-       
-    for ν in 0:360
-       o.ν = deg2rad(ν)
-       s = elements_to_state_vector(o, central_mass)
-       push!(points, s.r)
-    end
-    
-    xyz(v) = ([e[1] for e in v], [e[2] for e in v], [e[3] for e in v])
-    
-    plot(xyz(points))
-end
-
-function animate_orbit(orbit::OrbitalElements, central_mass, steps = 360)
-    points = []
-    
-    # the step period needs to be small for tight or highly elliptical orbits
-    s = orbital_period(orbit, central_mass) / steps
-    t = 0u"s"
-    
-    for i in 0:steps
-       o = orbital_position(orbit, t, central_mass)
-       sv = elements_to_state_vector(o, central_mass)
-       push!(points, sv.r)
-       t += s
-    end
-        
-    xyz(v) = ([e[1] for e in v], [e[2] for e in v], [e[3] for e in v])
-    
-    (xs, ys, zs) = xyz(points)
-    
-    #@gif for i in eachindex(xs)
-    #    scatter((xs[i], ys[i], zs[i]), xlims=(-1e8,1e8), ylims=(-1e8,1e8), zlims=(-1e6,1e6))
-    #end
-    
-    anim = Animation()
-    
-    for i in eachindex(triplets[1][1])
-        s=scatter((triplets[1][1][i], triplets[1][2][i], triplets[1][3][i]), xlims=(-1e8,1e8), ylims=(-1e8,1e8), zlims=(-1e6,1e6))
-        for o in triplets
-            plot!(s, o)
-        end
-        for o in triplets
-            xs = ustrip(o[1])
-            ys = ustrip(o[2])
-            zs = ustrip(o[3])
-            push!(s, (xs[i], ys[i], zs[i]))
-        end
-        frame(anim, s)
-    end
-    
-    gif(anim)
-end
 
 end
