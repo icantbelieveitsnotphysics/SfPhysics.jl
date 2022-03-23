@@ -32,7 +32,7 @@ const moon = Body(
 
 const mars = Body(
 			"Mars", 6.4171u"kg" * big(10)^23, Spheroid(3396.2u"km", 3376.2u"km"), 0.25, 0.17,
-			Orbit(sol, 227939200u"km", 0.0934, 5.65, 49.558, 286.502),
+			Orbit(sol, 1.523679u"AU", 0.0934, 5.65, 49.558, 286.502),
 			Rotation(0.3644, 1.025957u"d", 25.19))
 const phobos = Body(
 			"Phobos", 1.0659u"kg" * big(10)^16, Ellipsoid(13.5u"km", 11u"km", 9u"km"), missing, 0.071±0.012,
