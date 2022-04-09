@@ -60,6 +60,10 @@ include("orbital.jl")
 
 @reexport using .SfOrbital
 
+include("visualise.jl")
+
+export SfVisualise
+
 include("atmosphere.jl")
 
 @reexport using .SfAtmosphere
