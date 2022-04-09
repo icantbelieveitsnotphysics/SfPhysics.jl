@@ -4,6 +4,7 @@ authors = ["I Can't Believe It's Not Physics <icantbelieveitsnotphysics@runbox.n
 version = "0.1.0"
 
 [deps]
+DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 Elliptic = "b305315f-e792-5b7a-8f41-49f472929428"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
