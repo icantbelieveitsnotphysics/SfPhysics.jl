@@ -163,6 +163,21 @@ import LinearAlgebra: norm
 		@test lorentz_velocity(lorentz_factor(.95c_0)) ≈ .95c_0
 		
 		@test relativistic_kinetic_energy(m_p, relativistic_velocity(m_p, 100u"MeV")) ≈ 100u"MeV" atol = 1u"μeV"
+        
+        @test rapidity(0u"c") == 0
+        @test rapidity(1u"c") == Inf
+        @test rapidity_to_velocity(rapidity(0.5u"c")) == 0.5u"c"
+        
+        d = 5u"ly"
+        t = 10u"yr"
+        
+        @test relativistic_brachistochrone_transit_time(d, relativistic_brachistochrone_acceleration(d, t)) == t
+        
+        Δv = 0.5u"c"
+        ve = 0.5u"c"
+        
+        @test relativistic_delta_v(ve, relativistic_mass_ratio(ve, Δv)) == Δv
+        @test relativistic_delta_v(ve, relativistic_mass_ratio(ve, rapidity(Δv))) == Δv
 	end
 	
 	@testset "SfGeometry" begin
