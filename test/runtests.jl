@@ -353,7 +353,7 @@ import LinearAlgebra: norm
 		@test exhaust_velocity(1u"W", 2u"kg/s") ≈ 1u"m/s"
 	end
 	
-	@testset "SfFluidDynamics" begin
+	@testset "SfDrag" begin
 		@test drag_force(1, 2u"kg/m^3", 1u"m^2", 1u"m/s") == 2drag_force(1, 1u"kg/m^3", 1u"m^2", 1u"m/s")
 		@test drag_force(1, 2u"kg/m^3", 1u"m^2", 1u"m/s") == 2drag_force(0.5, 2u"kg/m^3", 1u"m^2", 1u"m/s")
 		@test drag_force(1, 2u"kg/m^3", 1u"m^2", 1u"m/s") == 0.25drag_force(1, 2u"kg/m^3", 1u"m^2", 2u"m/s")

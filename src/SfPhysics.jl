@@ -7,6 +7,7 @@ include("units.jl")
 @reexport using .SfUnits
 
 include("kinematics.jl")
+include("drag.jl")
 
 include("geometry.jl")
 
