@@ -4,7 +4,6 @@ authors = ["I Can't Believe It's Not Physics <icantbelieveitsnotphysics@runbox.n
 version = "0.1.0"
 
 [deps]
-DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 Elliptic = "b305315f-e792-5b7a-8f41-49f472929428"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
@@ -17,7 +16,6 @@ UnitfulAngles = "6fb2a4bd-7999-5318-a3b2-8ad61056cd98"
 UnitfulAstro = "6112ee07-acf9-5e0f-b108-d242c714bf9f"
 
 [compat]
-DifferentialEquations = "7"
 Documenter = "0.26, 0.27"
 Elliptic = "1.0"
 Measurements = "2.5"
