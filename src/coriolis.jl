@@ -11,7 +11,8 @@ export coriolis_acceleration, coriolis_force, tangential_velocity, centrifugal_a
 	
 DocMeta.setdocmeta!(SfCoriolis, :DocTestSetup, :(using Unitful, UnitfulAstro, ..SfCoriolis, ..SfGeometry); recursive=true)
 
-# this can't be a jldoctest example right now, as there's some regex/string comparison error that breaks it.
+# this can't be a jldoctest example right now, as there's some regex/string comparison error that breaks it,
+# probably as a result of the file containing characters like 𝐋
 """
     coriolis_acceleration(Ω::Vector, v::Vector)
 	
@@ -31,12 +32,29 @@ julia> coriolis_acceleration(0.001u"rad/s" * unit_y, 400u"m/s" * unit_x)
 coriolis_acceleration(Ω::Vector, v::Vector) = upreferred.(2cross(Ω, v))
 
 """
-    coriolis_acceleration(Ω::Vector, v::Vector)
+    coriolis_force(m::Unitful.Mass, Ω::Vector, v::Vector)
 	
-The strength of the coriolis force apparently acting on an object with mass `m` moving with velolcity
+The strength of the coriolis force apparently acting on an object with mass `m` moving with velocity
 vector `v` in a rotating reference frame with angular velocity vector `Ω`.
 """
 coriolis_force(m::Unitful.Mass, Ω::Vector, v::Vector) = m * coriolis_acceleration(Ω, v)
+
+@doc raw"""
+    coriolis_deflection(r::Unitful.Length, R::Unitful.Length)
+
+The apparent antispinward deflection of an object dropped at radius `r` and "falling" to radius `R` in a
+rotating reference frame. The deflection is independent of angular velocity.
+
+``d = R\left [ \sqrt{\left ( \frac{R^2}{r^2} - 1 \right )} - \arccos \left ( \frac{r}{R} \right ) \right ]``
+
+# Example
+
+```julia-repl
+julia> coriolis_deflection(98u"m", 100u"m")
+0.27238183108845293 m
+```
+"""
+coriolis_deflection(r::Unitful.Length, R::Unitful.Length) = R * (sqrt((R^2/r^2) - 1) - acos(r/R))
 
 """
     tangential_velocity(ω::AngularVelocity, r::Unitful.Length)
